@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
+using Newtonsoft.Json;
 
 namespace CRM.WebApi.Controllers
 {
@@ -17,9 +18,9 @@ namespace CRM.WebApi.Controllers
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
         // GET: api/Contacts
-        public IQueryable<Contact> GetContacts()
+        public List<Contact> GetContacts()
         {
-            return db.Contacts;
+            return db.Contacts.ToListAsync().Result;
         }
 
         // GET: api/Contacts/5
