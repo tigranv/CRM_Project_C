@@ -11,6 +11,10 @@ Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "CRM.Database", "Source\CRM.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.WebApi", "Source\CRM.WebApi\CRM.WebApi.csproj", "{C37156A0-5E28-4622-9CDA-75DBF0DB2F2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.EntityFrameworkLib", "Source\CRM.EntityFrameworkLib\CRM.EntityFrameworkLib.csproj", "{57873287-EC18-4670-A50B-620817449B6A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.MethodsLib", "Source\CRM.MethodsLib\CRM.MethodsLib.csproj", "{77D5B97A-33F1-4DBB-9E54-6A58718EE20B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,11 +31,21 @@ Global
 		{C37156A0-5E28-4622-9CDA-75DBF0DB2F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C37156A0-5E28-4622-9CDA-75DBF0DB2F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C37156A0-5E28-4622-9CDA-75DBF0DB2F2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57873287-EC18-4670-A50B-620817449B6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57873287-EC18-4670-A50B-620817449B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57873287-EC18-4670-A50B-620817449B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57873287-EC18-4670-A50B-620817449B6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77D5B97A-33F1-4DBB-9E54-6A58718EE20B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77D5B97A-33F1-4DBB-9E54-6A58718EE20B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77D5B97A-33F1-4DBB-9E54-6A58718EE20B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77D5B97A-33F1-4DBB-9E54-6A58718EE20B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C37156A0-5E28-4622-9CDA-75DBF0DB2F2A} = {9654E2AC-B179-45BB-987B-E24203D52496}
+		{57873287-EC18-4670-A50B-620817449B6A} = {9654E2AC-B179-45BB-987B-E24203D52496}
+		{77D5B97A-33F1-4DBB-9E54-6A58718EE20B} = {9654E2AC-B179-45BB-987B-E24203D52496}
 	EndGlobalSection
 EndGlobal
