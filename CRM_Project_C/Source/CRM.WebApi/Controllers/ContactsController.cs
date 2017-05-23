@@ -134,17 +134,16 @@ namespace CRM.WebApi.Controllers
         [ResponseType(typeof(Contact))]
         public IHttpActionResult GetContact(int start, int numberOfrows, bool flag)
         {
-            //List<Contact> query = from i in  db.Contacts
-            //                      orderby i.ContactId
-            //                       NEXT m ROWS ONLY
+            var query = db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(numberOfrows).ToList();
+
+            for (int i = 0; i < query.Count; i++)
+            {
+                query[i].EmailLists = new List<EmailList>();
+            }
+
+            return Ok(query);
 
 
-            //if (query == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return Ok(query);
         }
     }
 }
