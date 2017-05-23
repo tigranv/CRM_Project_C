@@ -38,19 +38,29 @@ namespace CRM.WebApi.Controllers
 
         // PUT: api/Contacts/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutContact(int id, Contact contact)
+        public IHttpActionResult PutContact([FromBody]Contact contact)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != contact.ContactId)
+            var id = contact.ContactId;
+            var PartnerToUpdate = db.Contacts.Find(id);
+
+            if (PartnerToUpdate == null)
             {
                 return BadRequest();
             }
 
-            db.Entry(contact).State = EntityState.Modified;
+            PartnerToUpdate.FullName = contact.FullName;
+            PartnerToUpdate.Country = contact.Country;
+            PartnerToUpdate.CompanyName = contact.CompanyName;
+            PartnerToUpdate.Email = contact.Email;
+            PartnerToUpdate.EmailLists = contact.EmailLists;
+
+            //db.Entry(PartnerToUpdate).State = EntityState.Modified;
+            //db.Partners.AddOrUpdate(PartnerToUpdate);
 
             try
             {
@@ -79,6 +89,9 @@ namespace CRM.WebApi.Controllers
             {
                 return BadRequest(ModelState);
             }
+
+            contact.DateInserted = DateTime.Now;
+            contact.GuID = Guid.NewGuid();
 
             db.Contacts.Add(contact);
             db.SaveChanges();
@@ -114,6 +127,24 @@ namespace CRM.WebApi.Controllers
         private bool ContactExists(int id)
         {
             return db.Contacts.Count(e => e.ContactId == id) > 0;
+        }
+
+
+        // GET: api/Contacts/5/2/true
+        [ResponseType(typeof(Contact))]
+        public IHttpActionResult GetContact(int start, int numberOfrows, bool flag)
+        {
+            //List<Contact> query = from i in  db.Contacts
+            //                      orderby i.ContactId
+            //                       NEXT m ROWS ONLY
+
+
+            //if (query == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return Ok(query);
         }
     }
 }
