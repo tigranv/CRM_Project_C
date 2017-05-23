@@ -9,5 +9,6 @@ namespace CRM.WebApi.Controllers
 {
     public class SendEmailsController : ApiController
     {
+
     }
 }
