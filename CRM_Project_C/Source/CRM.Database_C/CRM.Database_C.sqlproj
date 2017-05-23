@@ -66,5 +66,6 @@
     <Build Include="dbo\Tables\EmailLists.sql" />
     <Build Include="dbo\Tables\EmailListContacts.sql" />
     <Build Include="dbo\Tables\Templates.sql" />
+    <Build Include="dbo\Stored Procedures\GetByPageProc.sql" />
   </ItemGroup>
 </Project>
