@@ -8,6 +8,10 @@ namespace CRM.WebApi.Models
 {
     public class MyEmailList
     {
+        public MyEmailList()
+        {
+
+        }
         public MyEmailList(EmailList emaillist)
         {
             EmailListID = emaillist.EmailListID;
