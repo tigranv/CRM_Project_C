@@ -14,29 +14,24 @@ using CRM.WebApi.Models;
 using System.Data.SqlClient;
 using System.Web.Routing;
 
+//TODO: Transactions need to be added
+//TODO: Authentication must be added
+//TODO: Exception handling
+
 namespace CRM.WebApi.Controllers
 {
     public class ContactsController : ApiController
-    {
-        //TODO: Transactions need to be added
-        //TODO: Autontication must be added
+    {      
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
         // GET: api/Contacts
         public List<MyContact> GetContacts()
         {
-            List<Contact> DbContactList = db.Contacts.ToList();
-            List<MyContact> MyContactList = new List<MyContact>();
-
-            foreach (var contact in DbContactList)
-            {
-                MyContactList.Add(new MyContact(contact));
-            }
-
-            return MyContactList;
+            db.Configuration.LazyLoadingEnabled = false;
+            return FromDbContactToMyContact(db.Contacts.ToList());
         }
 
-        // GET: api/Contacts/5
+        // GET: api/Contacts/Guid
         [ResponseType(typeof(MyContact))]
         public IHttpActionResult GetContact(Guid id)
         {
@@ -49,26 +44,21 @@ namespace CRM.WebApi.Controllers
             return Ok(new MyContact(contact));
         }
 
-        // GET: api/Contacts/5
-        [Route("api/Contacts/pages")]
-        public int GetContactsPageCount()
+        // GET: api/Contacts?start=2&rows=3&ord=false
+        [ResponseType(typeof(MyContact))]
+        public IHttpActionResult GetOrderedContactsByPage(int start, int rows, bool ord)
         {
-            return db.Contacts.Count() > 10 ? db.Contacts.Count() / 10 : 1;
+            db.Configuration.LazyLoadingEnabled = false;
+            var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList():
+                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
+            return Ok(FromDbContactToMyContact(dbContacts));
         }
 
-        // GET: api/Contacts/5/2/true
-        [ResponseType(typeof(MyContact))]
-        public IHttpActionResult GetContactsByPage(int start, int numberOfrows, bool flag)
+        // GET: api/Contacts/pages/5
+        [Route("api/Contacts/pages")]
+        public int GetNumberOfPagies(int perPage)
         {
-            List<MyContact> PageingContactList = new List<MyContact>();
-            var query = db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(numberOfrows).ToList();
-
-            foreach (var contact in query)
-            {
-                PageingContactList.Add(new MyContact(contact));
-            }
-
-            return Ok(PageingContactList);
+            return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage):(db.Contacts.Count() / perPage +1): 1;
         }
 
         // PUT: api/Contacts/5
@@ -183,5 +173,17 @@ namespace CRM.WebApi.Controllers
         //{
         //    return Ok();
         //}
+
+        private List<MyContact> FromDbContactToMyContact(List<Contact> contacts)
+        {
+            List<MyContact> MyContactList = new List<MyContact>();
+
+            foreach (var contact in contacts)
+            {
+                MyContactList.Add(new MyContact(contact));
+            }
+
+            return MyContactList;
+        }
     }
 }

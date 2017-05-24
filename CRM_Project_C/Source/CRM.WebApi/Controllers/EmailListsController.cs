@@ -17,10 +17,12 @@ namespace CRM.WebApi.Controllers
     public class EmailListsController : ApiController
     {
         private CRMDataBaseModel db = new CRMDataBaseModel();
+        
 
         // GET: api/EmailLists
         public List<MyEmailList> GetEmailLists()
         {
+            db.Configuration.LazyLoadingEnabled = false;
             List<EmailList> DbEmailList = db.EmailLists.ToListAsync().Result;
             List<MyEmailList> MyemailList = new List<MyEmailList>();
 
