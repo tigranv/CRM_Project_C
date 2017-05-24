@@ -92,14 +92,26 @@ namespace CRM.WebApi.Controllers
 
         // POST: api/EmailLists
         [ResponseType(typeof(EmailList))]
-        public IHttpActionResult PostEmailList(EmailList emailList)
+        public IHttpActionResult PostEmailList([FromBody] MyEmailList emailList)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.EmailLists.Add(emailList);
+            ICollection<Contact> AddeddContacts = new List<Contact>();
+            foreach (string item in emailList.Contacts)
+            {
+                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.Email == item));
+            }
+
+            EmailList NewEmailList = new EmailList()
+            {
+                EmailListName = emailList.EmailListName,
+                Contacts = AddeddContacts
+            };
+
+            db.EmailLists.Add(NewEmailList);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = emailList.EmailListID }, emailList);
