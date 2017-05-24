@@ -10,6 +10,8 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
 using Newtonsoft.Json;
+using CRM.WebApi.Models;
+using System.Data.SqlClient;
 
 namespace CRM.WebApi.Controllers
 {
@@ -18,48 +20,57 @@ namespace CRM.WebApi.Controllers
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
         // GET: api/Contacts
-        public List<Contact> GetContacts()
+        public List<MyContact> GetContacts()
         {
-            return db.Contacts.ToListAsync().Result;
+            List<Contact> DbContactList = db.Contacts.ToListAsync().Result;
+            List<MyContact> MyContactList = new List<MyContact>();
+
+            foreach (var contact in DbContactList)
+            {
+                MyContactList.Add(new MyContact(contact));
+            }
+
+            return MyContactList;
         }
 
         // GET: api/Contacts/5
-        [ResponseType(typeof(Contact))]
-        public IHttpActionResult GetContact(int id)
+        [ResponseType(typeof(MyContact))]
+        public IHttpActionResult GetContact(string id)
         {
-            Contact contact = db.Contacts.Find(id);
-            if (contact == null)
+            Guid gud = new Guid(id);
+            var contact = db.Contacts.Where(t => t.GuID.ToString() == id).ToList<Contact>();
+            if (contact.Count() == 0)
             {
                 return NotFound();
             }
 
-            return Ok(contact);
+            return Ok(new MyContact(contact[0]));
         }
 
         // PUT: api/Contacts/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutContact([FromBody]Contact contact)
+        public IHttpActionResult PutContact([FromBody]MyContact contact)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var id = contact.ContactId;
-            var PartnerToUpdate = db.Contacts.Find(id);
+            Guid id = contact.GuID;
+            var dbPartner = db.Contacts.Where(t => t.GuID == id).ToList();
 
-            if (PartnerToUpdate == null)
+            if (dbPartner.Count() == 0)
             {
                 return BadRequest();
             }
 
+            Contact PartnerToUpdate = dbPartner[0];
             PartnerToUpdate.FullName = contact.FullName;
             PartnerToUpdate.Country = contact.Country;
             PartnerToUpdate.CompanyName = contact.CompanyName;
             PartnerToUpdate.Email = contact.Email;
-            PartnerToUpdate.EmailLists = contact.EmailLists;
 
-            //db.Entry(PartnerToUpdate).State = EntityState.Modified;
+            db.Entry(PartnerToUpdate).State = EntityState.Modified;
             //db.Partners.AddOrUpdate(PartnerToUpdate);
 
             try
@@ -82,34 +93,44 @@ namespace CRM.WebApi.Controllers
         }
 
         // POST: api/Contacts
-        [ResponseType(typeof(Contact))]
-        public IHttpActionResult PostContact(Contact contact)
+        [ResponseType(typeof(MyContact))]
+        public IHttpActionResult PostContact([FromBody]MyContact contact)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            contact.DateInserted = DateTime.Now;
-            contact.GuID = Guid.NewGuid();
+            Contact dbCont = new Contact()
+            {
+                FullName = contact.FullName,
+                Position = contact.Position,
+                Email = contact.Email,
+                Country = contact.Country,
+                CompanyName = contact.CompanyName,
+                DateInserted = DateTime.Now,
+                GuID = Guid.NewGuid()
+            };
+            
 
-            db.Contacts.Add(contact);
+            db.Contacts.Add(dbCont);
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = contact.ContactId }, contact);
+            return CreatedAtRoute("DefaultApi", new { id = dbCont.GuID}, contact);
         }
 
         // DELETE: api/Contacts/5
-        [ResponseType(typeof(Contact))]
-        public IHttpActionResult DeleteContact(int id)
+        [ResponseType(typeof(MyContact))]
+        public IHttpActionResult DeleteContact(string id)
         {
-            Contact contact = db.Contacts.Find(id);
-            if (contact == null)
+            Guid gud = new Guid(id);
+            var contact = db.Contacts.Where(t => t.GuID.ToString() == id).ToList<Contact>();
+            if (contact.Count == 0)
             {
                 return NotFound();
             }
 
-            db.Contacts.Remove(contact);
+            db.Contacts.Remove(contact[0]);
             db.SaveChanges();
 
             return Ok(contact);
@@ -124,26 +145,27 @@ namespace CRM.WebApi.Controllers
             base.Dispose(disposing);
         }
 
-        private bool ContactExists(int id)
+        private bool ContactExists(Guid id)
         {
-            return db.Contacts.Count(e => e.ContactId == id) > 0;
+            return db.Contacts.Count(e => e.GuID == id) > 0;
         }
 
 
         // GET: api/Contacts/5/2/true
-        [ResponseType(typeof(Contact))]
+        [ResponseType(typeof(MyContact))]
         public IHttpActionResult GetContact(int start, int numberOfrows, bool flag)
         {
+            List<MyContact> PageingContactList = new List<MyContact>();
+
+            
             var query = db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(numberOfrows).ToList();
 
-            for (int i = 0; i < query.Count; i++)
+            foreach (var contact in query)
             {
-                query[i].EmailLists = new List<EmailList>();
+                PageingContactList.Add(new MyContact(contact));
             }
 
-            return Ok(query);
-
-
+            return Ok(PageingContactList);
         }
     }
 }

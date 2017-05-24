@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
+using CRM.WebApi.Models;
 
 namespace CRM.WebApi.Controllers
 {
@@ -17,13 +18,21 @@ namespace CRM.WebApi.Controllers
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
         // GET: api/EmailLists
-        public IQueryable<EmailList> GetEmailLists()
+        public List<MyEmailList> GetEmailLists()
         {
-            return db.EmailLists;
+            List<EmailList> DbEmailList = db.EmailLists.ToListAsync().Result;
+            List<MyEmailList> MyemailList = new List<MyEmailList>();
+
+            foreach (var elist in DbEmailList)
+            {
+                MyemailList.Add(new MyEmailList(elist));
+            }
+
+            return MyemailList;
         }
 
         // GET: api/EmailLists/5
-        [ResponseType(typeof(EmailList))]
+        [ResponseType(typeof(MyEmailList))]
         public IHttpActionResult GetEmailList(int id)
         {
             EmailList emailList = db.EmailLists.Find(id);
@@ -32,7 +41,7 @@ namespace CRM.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(emailList);
+            return Ok(new MyEmailList(emailList));
         }
 
         // PUT: api/EmailLists/5

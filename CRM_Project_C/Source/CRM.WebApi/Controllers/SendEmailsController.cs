@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CRM.EntityFrameWorkLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -10,5 +11,9 @@ namespace CRM.WebApi.Controllers
     public class SendEmailsController : ApiController
     {
 
+        private void SendEmailToList(List<Contact> ContactsList)
+        {
+
+        }
     }
 }

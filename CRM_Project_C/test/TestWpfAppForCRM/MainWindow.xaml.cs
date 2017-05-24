@@ -27,9 +27,9 @@ namespace TestWpfAppForCRM
     public partial class MainWindow : Window
     {
         private readonly HttpClient _client = new HttpClient();
-        List<Contact> partnersList;
-        List<EmailList> emailListsList;
-        List<Contact> emailListPartners;
+        List<MyContact> partnersList;
+        List<MyEmailList> emailListsList;
+        List<string> emailListPartners;
 
 
         public MainWindow()
@@ -54,7 +54,7 @@ namespace TestWpfAppForCRM
                         string responseText = message.Content.ReadAsStringAsync().Result;
 
                         JavaScriptSerializer jss = new JavaScriptSerializer();
-                        partnersList = jss.Deserialize<List<Contact>>(responseText);
+                        partnersList = jss.Deserialize<List<MyContact>>(responseText);
 
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                         (Action)(() =>
@@ -68,7 +68,7 @@ namespace TestWpfAppForCRM
         private async void MouseClickOnDatagrid(object sender, MouseButtonEventArgs e)
         {
             HttpClient client = new HttpClient();
-            string id = partnersList[MyGridParters.SelectedIndex].ContactId.ToString();
+            string id = partnersList[MyGridParters.SelectedIndex].GuID.ToString();
             string url = string.Format(@"http://localhost:56217/api/contacts?id={0}", Uri.EscapeDataString(id));
 
             await client.GetAsync(url)
@@ -84,12 +84,12 @@ namespace TestWpfAppForCRM
                         string responseText = message.Content.ReadAsStringAsync().Result;
 
                         JavaScriptSerializer jss = new JavaScriptSerializer();
-                        Contact person = jss.Deserialize<Contact>(responseText);
+                        MyContact person = jss.Deserialize<MyContact>(responseText);
 
                         string mailingLists = "";
-                        foreach (var item in person.EmailLists)
+                        foreach (string item in person.EmailLists)
                         {
-                            mailingLists += item.EmailListName + ",  ";
+                            mailingLists += item+ ", ";
                         }
 
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
@@ -106,37 +106,36 @@ namespace TestWpfAppForCRM
             if (MyGridParters.SelectedItems.Count != 1) return;
             HttpClient client = new HttpClient();
 
-            Contact p = new Contact()
-            {
-                ContactId = partnersList[MyGridParters.SelectedIndex].ContactId,
-                FullName = PartnerNameTextbox.Text,
-                CompanyName = CompanyNameTextbox.Text,
-                Country = CountryNameTextbox.Text,
-                Position = PositionTextbox.Text,
-                Email = EmailTextbox.Text,
-            };
+            MyContact p = new MyContact();
+            p.GuID = partnersList[MyGridParters.SelectedIndex].GuID;
+            p.EmailLists = partnersList[MyGridParters.SelectedIndex].EmailLists;
+            p.FullName = PartnerNameTextbox.Text;
+            p.CompanyName = CompanyNameTextbox.Text;
+            p.Country = CountryNameTextbox.Text;
+            p.Position = PositionTextbox.Text;
+            p.Email = EmailTextbox.Text;
+            p.DateInserted = partnersList[MyGridParters.SelectedIndex].DateInserted;
+
 
             HttpResponseMessage response = client.PutAsync(@"http://localhost:56217/api/contacts", p, new JsonMediaTypeFormatter()).Result;
             string message = response.Content.ReadAsStringAsync().Result;
             JavaScriptSerializer jss = new JavaScriptSerializer();
+            MessageBox.Show(message);
         }
 
         private void Createbt_Click(object sender, RoutedEventArgs e)
         {
             HttpClient client = new HttpClient();
 
-            Contact p = new Contact()
-            {
-                FullName = PartnerNameTextbox.Text,
-                CompanyName = CompanyNameTextbox.Text,
-                Country = CountryNameTextbox.Text,
-                Position = PositionTextbox.Text,
-                Email = EmailTextbox.Text,
-            };
+            MyContact p = new MyContact();
+            p.FullName = PartnerNameTextbox.Text;
+            p.CompanyName = CompanyNameTextbox.Text;
+            p.Country = CountryNameTextbox.Text;
+            p.Position = PositionTextbox.Text;
+            p.Email = EmailTextbox.Text;
 
             HttpResponseMessage response = client.PostAsync(@"http://localhost:56217/api/contacts", p, new JsonMediaTypeFormatter()).Result;
             string message = response.Content.ReadAsStringAsync().Result;
-            JavaScriptSerializer jss = new JavaScriptSerializer();
         }
 
         private void UploadFile_Click(object sender, RoutedEventArgs e)
@@ -149,7 +148,7 @@ namespace TestWpfAppForCRM
             if (MyGridParters.SelectedItems.Count == 1)
             {
                 HttpClient client = new HttpClient();
-                string id = partnersList[MyGridParters.SelectedIndex].ContactId.ToString();
+                string id = partnersList[MyGridParters.SelectedIndex].GuID.ToString();
                 string url = string.Format(@"http://localhost:56217/api/contacts?id={0}", Uri.EscapeDataString(id));
 
                 client.DeleteAsync(url);
@@ -173,7 +172,7 @@ namespace TestWpfAppForCRM
                         string responseText = message.Content.ReadAsStringAsync().Result;
 
                         JavaScriptSerializer jss = new JavaScriptSerializer();
-                        emailListsList = jss.Deserialize<List<EmailList>>(responseText);
+                        emailListsList = jss.Deserialize<List<MyEmailList>>(responseText);
 
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                         (Action)(() =>
@@ -203,12 +202,10 @@ namespace TestWpfAppForCRM
                         string responseText = message.Content.ReadAsStringAsync().Result;
 
                         JavaScriptSerializer jss = new JavaScriptSerializer();
-                        EmailList emailList = jss.Deserialize<EmailList>(responseText);
+                        MyEmailList emailList = jss.Deserialize<MyEmailList>(responseText);
                         emailListPartners = null;
-                        emailListPartners = emailList.Contacts.ToList();
-
-
-
+                        emailListPartners = emailList.Contacts;
+                        MessageBox.Show(emailListPartners[0]);
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                         (Action)(() =>
                         {
