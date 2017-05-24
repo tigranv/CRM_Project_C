@@ -10,6 +10,7 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
+using System.Windows;
 
 namespace CRM.WebApi.Controllers
 {
@@ -46,19 +47,29 @@ namespace CRM.WebApi.Controllers
 
         // PUT: api/EmailLists/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmailList(int id, EmailList emailList)
+        public IHttpActionResult PutEmailList([FromBody] MyEmailList emailList)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != emailList.EmailListID)
+            EmailList dbEmailListToUpdate = db.EmailLists.FirstOrDefault(t => t.EmailListID == emailList.EmailListID);
+            if (dbEmailListToUpdate == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            db.Entry(emailList).State = EntityState.Modified;
+            dbEmailListToUpdate.EmailListName = emailList.EmailListName;
+            ICollection<Contact> UpdatedContacts = new List<Contact>();
+            foreach (string item in emailList.Contacts)
+            {
+                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.Email == item));
+            }
+
+            dbEmailListToUpdate.Contacts.Clear();
+            dbEmailListToUpdate.Contacts = UpdatedContacts;
+            db.Entry(dbEmailListToUpdate).State = EntityState.Modified;
 
             try
             {
@@ -66,7 +77,7 @@ namespace CRM.WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!EmailListExists(id))
+                if (!EmailListExists(emailList.EmailListID))
                 {
                     return NotFound();
                 }
