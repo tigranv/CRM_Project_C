@@ -24,23 +24,24 @@ namespace CRM.WebApi.Controllers
                 //var transportWeb = new SendGrid.Web("SENDGRID_APIKEY");
                 //transportWeb.DeliverAsync(myMessage).Wait();
 
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.sendgrid.com");
+                //MailMessage mail = new MailMessage();
+                //SmtpClient SmtpServer = new SmtpClient("smtp.sendgrid.com");
 
-                mail.From = new MailAddress("yegoryan.narek@gmail.com");
-                mail.To.Add("yegoryan.narek@gmail.com"/*ContactsList[item].Email*/);
-                mail.Subject = "Test Mail";
-                mail.Body = "This is for testing SMTP mail from GMAIL";
+                //mail.From = new MailAddress("yegoryan.narek@gmail.com");
+                //mail.To.Add("yegoryan.narek@gmail.com"/*ContactsList[item].Email*/);
+                //mail.Subject = "Test Mail";
+                //mail.Body = "This is for testing SMTP mail from GMAIL";
 
-                SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("username", "password");
-                SmtpServer.EnableSsl = true;
+                //SmtpServer.Port = 587;
+                //SmtpServer.Credentials = new System.Net.NetworkCredential("username", "password");
+                //SmtpServer.EnableSsl = true;
 
-                ServicePointManager.ServerCertificateValidationCallback = delegate
-                (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                { return true; };
+                //ServicePointManager.ServerCertificateValidationCallback = delegate
+                //(object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+                //{ return true; };
 
-                SmtpServer.Send(mail);
+                //SmtpServer.Send(mail);
             }
+        }
     }
 }
