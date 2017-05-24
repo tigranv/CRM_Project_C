@@ -12,17 +12,20 @@ using CRM.EntityFrameWorkLib;
 using Newtonsoft.Json;
 using CRM.WebApi.Models;
 using System.Data.SqlClient;
+using System.Web.Routing;
 
 namespace CRM.WebApi.Controllers
 {
     public class ContactsController : ApiController
     {
+        //TODO: Transactions need to be added
+        //TODO: Autontication must be added
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
         // GET: api/Contacts
         public List<MyContact> GetContacts()
         {
-            List<Contact> DbContactList = db.Contacts.ToListAsync().Result;
+            List<Contact> DbContactList = db.Contacts.ToList();
             List<MyContact> MyContactList = new List<MyContact>();
 
             foreach (var contact in DbContactList)
@@ -35,16 +38,37 @@ namespace CRM.WebApi.Controllers
 
         // GET: api/Contacts/5
         [ResponseType(typeof(MyContact))]
-        public IHttpActionResult GetContact(string id)
+        public IHttpActionResult GetContact(Guid id)
         {
-            Guid gud = new Guid(id);
-            var contact = db.Contacts.Where(t => t.GuID.ToString() == id).ToList<Contact>();
-            if (contact.Count() == 0)
+            var contact = db.Contacts.FirstOrDefault(t => t.GuID == id);
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            return Ok(new MyContact(contact[0]));
+            return Ok(new MyContact(contact));
+        }
+
+        // GET: api/Contacts/5
+        [Route("api/Contacts/pages")]
+        public int GetContactsPageCount()
+        {
+            return db.Contacts.Count() > 10 ? db.Contacts.Count() / 10 : 1;
+        }
+
+        // GET: api/Contacts/5/2/true
+        [ResponseType(typeof(MyContact))]
+        public IHttpActionResult GetContactsByPage(int start, int numberOfrows, bool flag)
+        {
+            List<MyContact> PageingContactList = new List<MyContact>();
+            var query = db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(numberOfrows).ToList();
+
+            foreach (var contact in query)
+            {
+                PageingContactList.Add(new MyContact(contact));
+            }
+
+            return Ok(PageingContactList);
         }
 
         // PUT: api/Contacts/5
@@ -57,21 +81,19 @@ namespace CRM.WebApi.Controllers
             }
 
             Guid id = contact.GuID;
-            var dbPartner = db.Contacts.Where(t => t.GuID == id).ToList();
-
-            if (dbPartner.Count() == 0)
+            var dbPartner = db.Contacts.FirstOrDefault(t => t.GuID == id);
+            if (dbPartner == null)
             {
-                return BadRequest();
+                return NotFound();
             }
 
-            Contact PartnerToUpdate = dbPartner[0];
+            Contact PartnerToUpdate = dbPartner;
             PartnerToUpdate.FullName = contact.FullName;
             PartnerToUpdate.Country = contact.Country;
             PartnerToUpdate.CompanyName = contact.CompanyName;
             PartnerToUpdate.Email = contact.Email;
 
             db.Entry(PartnerToUpdate).State = EntityState.Modified;
-            //db.Partners.AddOrUpdate(PartnerToUpdate);
 
             try
             {
@@ -121,16 +143,15 @@ namespace CRM.WebApi.Controllers
 
         // DELETE: api/Contacts/5
         [ResponseType(typeof(MyContact))]
-        public IHttpActionResult DeleteContact(string id)
+        public IHttpActionResult DeleteContact(Guid id)
         {
-            Guid gud = new Guid(id);
-            var contact = db.Contacts.Where(t => t.GuID.ToString() == id).ToList<Contact>();
-            if (contact.Count == 0)
+            var contact = db.Contacts.FirstOrDefault(t => t.GuID == id);
+            if (contact == null)
             {
                 return NotFound();
             }
 
-            db.Contacts.Remove(contact[0]);
+            db.Contacts.Remove(contact);
             db.SaveChanges();
 
             return Ok(contact);
@@ -151,21 +172,16 @@ namespace CRM.WebApi.Controllers
         }
 
 
-        // GET: api/Contacts/5/2/true
-        [ResponseType(typeof(MyContact))]
-        public IHttpActionResult GetContact(int start, int numberOfrows, bool flag)
-        {
-            List<MyContact> PageingContactList = new List<MyContact>();
+        //[Route("api/Contacts/upload")]
+        //public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
+        //{
+        //    return Ok();
+        //}
 
-            
-            var query = db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(numberOfrows).ToList();
-
-            foreach (var contact in query)
-            {
-                PageingContactList.Add(new MyContact(contact));
-            }
-
-            return Ok(PageingContactList);
-        }
+        //[Route("api/Contacts/query")]
+        //public IHttpActionResult PostQuery([FromBody]  file, [FromUri] string query)
+        //{
+        //    return Ok();
+        //}
     }
 }
