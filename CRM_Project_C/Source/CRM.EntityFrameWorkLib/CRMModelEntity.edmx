@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="CRM.DatabaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="crmCModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="ContactId" />
@@ -68,7 +68,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="CRMDatabaseModelStoreContainer">
+        <EntityContainer Name="crmCModelStoreContainer">
           <EntitySet Name="Contacts" EntityType="Self.Contacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmailListContacts" EntityType="Self.EmailListContacts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EmailLists" EntityType="Self.EmailLists" Schema="dbo" store:Type="Tables" />
@@ -82,10 +82,11 @@
             <End Role="EmailListContacts" EntitySet="EmailListContacts" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="CRM.DatabaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="crmCModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Contact">
           <Key>
             <PropertyRef Name="ContactId" />
@@ -133,9 +134,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="CRMDatabaseModelStoreContainer" CdmEntityContainer="CRMDataBaseModel">
+        <EntityContainerMapping StorageEntityContainer="crmCModelStoreContainer" CdmEntityContainer="CRMDataBaseModel">
           <EntitySetMapping Name="Contacts">
-            <EntityTypeMapping TypeName="CRM.DatabaseModel.Contact">
+            <EntityTypeMapping TypeName="crmCModel.Contact">
               <MappingFragment StoreEntitySet="Contacts">
                 <ScalarProperty Name="ContactId" ColumnName="ContactId" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
@@ -149,7 +150,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="EmailLists">
-            <EntityTypeMapping TypeName="CRM.DatabaseModel.EmailList">
+            <EntityTypeMapping TypeName="crmCModel.EmailList">
               <MappingFragment StoreEntitySet="EmailLists">
                 <ScalarProperty Name="EmailListID" ColumnName="EmailListID" />
                 <ScalarProperty Name="EmailListName" ColumnName="EmailListName" />
@@ -157,14 +158,14 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Templates">
-            <EntityTypeMapping TypeName="CRM.DatabaseModel.Template">
+            <EntityTypeMapping TypeName="crmCModel.Template">
               <MappingFragment StoreEntitySet="Templates">
                 <ScalarProperty Name="TemplateId" ColumnName="TemplateId" />
                 <ScalarProperty Name="TemplateName" ColumnName="TemplateName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="EmailListContacts" TypeName="CRM.DatabaseModel.EmailListContacts" StoreEntitySet="EmailListContacts">
+          <AssociationSetMapping Name="EmailListContacts" TypeName="crmCModel.EmailListContacts" StoreEntitySet="EmailListContacts">
             <EndProperty Name="Contacts">
               <ScalarProperty Name="ContactId" ColumnName="ContactID" />
             </EndProperty>

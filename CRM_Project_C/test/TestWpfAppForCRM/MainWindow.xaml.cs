@@ -29,7 +29,7 @@ namespace TestWpfAppForCRM
         private readonly HttpClient _client = new HttpClient();
         List<MyContact> partnersList;
         List<MyEmailList> emailListsList;
-        List<string> emailListPartners;
+        Dictionary<Guid, string> emailListPartners;
 
 
         public MainWindow()
@@ -87,9 +87,9 @@ namespace TestWpfAppForCRM
                         MyContact person = jss.Deserialize<MyContact>(responseText);
 
                         string mailingLists = "";
-                        foreach (string item in person.EmailLists)
+                        foreach (var item in person.EmailLists)
                         {
-                            mailingLists += item+ ", ";
+                            mailingLists += item.Value+ ", ";
                         }
 
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
@@ -205,7 +205,6 @@ namespace TestWpfAppForCRM
                         MyEmailList emailList = jss.Deserialize<MyEmailList>(responseText);
                         emailListPartners = null;
                         emailListPartners = emailList.Contacts;
-                        MessageBox.Show(emailListPartners[0]);
                         Dispatcher.BeginInvoke(DispatcherPriority.Normal,
                         (Action)(() =>
                         {

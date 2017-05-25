@@ -48,12 +48,11 @@ namespace TestWpfAppForCRM
         {
             GuID = new Guid();
             DateInserted = null;
-            EmailLists = new List<string>();
+            EmailLists = new Dictionary<int, string>();
         }
-
         public MyContact(Contact contact)
         {
-            EmailLists = new List<string>();
+            EmailLists = new Dictionary<int, string>();
             FullName = contact.FullName;
             Position = contact.Position;
             Email = contact.Email;
@@ -64,7 +63,7 @@ namespace TestWpfAppForCRM
 
             foreach (var item in contact.EmailLists)
             {
-                EmailLists.Add(item.EmailListName);
+                EmailLists.Add(item.EmailListID, item.EmailListName);
             }
         }
 
@@ -75,31 +74,29 @@ namespace TestWpfAppForCRM
         public string Email { get; set; }
         public Guid GuID { get; set; }
         public DateTime? DateInserted { get; set; }
-        public List<string> EmailLists { get; set; }
+        public Dictionary<int, string> EmailLists { get; set; }
     }
 
     public class MyEmailList
     {
         public MyEmailList()
         {
-            Contacts = new List<string>();
+            Contacts = new Dictionary<Guid, string>();
         }
-
         public MyEmailList(EmailList emaillist)
         {
             EmailListID = emaillist.EmailListID;
             EmailListName = emaillist.EmailListName;
-
-            Contacts = new List<string>();
+            Contacts = new Dictionary<Guid, string>();
 
             foreach (var item in emaillist.Contacts)
             {
-                Contacts.Add(item.Email);
+                Contacts.Add(item.GuID, item.Email);
             }
         }
 
         public int EmailListID { get; set; }
         public string EmailListName { get; set; }
-        public virtual List<string> Contacts { get; set; }
+        public virtual Dictionary<Guid, string> Contacts { get; set; }
     }
 }

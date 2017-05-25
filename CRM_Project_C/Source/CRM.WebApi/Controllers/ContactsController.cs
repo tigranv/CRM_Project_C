@@ -51,6 +51,7 @@ namespace CRM.WebApi.Controllers
             db.Configuration.LazyLoadingEnabled = false;
             var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList():
                 db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
+
             return Ok(FromDbContactToMyContact(dbContacts));
         }
 
@@ -61,7 +62,7 @@ namespace CRM.WebApi.Controllers
             return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage):(db.Contacts.Count() / perPage +1): 1;
         }
 
-        // PUT: api/Contacts/5
+        // PUT: api/Contacts (MyContact model from body)
         [ResponseType(typeof(void))]
         public IHttpActionResult PutContact([FromBody]MyContact contact)
         {
@@ -70,20 +71,20 @@ namespace CRM.WebApi.Controllers
                 return BadRequest(ModelState);
             }
 
-            Guid id = contact.GuID;
-            var dbPartner = db.Contacts.FirstOrDefault(t => t.GuID == id);
-            if (dbPartner == null)
+            Contact dbContact = db.Contacts.FirstOrDefault(t => t.GuID == contact.GuID);
+
+            if (dbContact == null)
             {
                 return NotFound();
             }
 
-            Contact PartnerToUpdate = dbPartner;
-            PartnerToUpdate.FullName = contact.FullName;
-            PartnerToUpdate.Country = contact.Country;
-            PartnerToUpdate.CompanyName = contact.CompanyName;
-            PartnerToUpdate.Email = contact.Email;
+            //Contact PartnerToUpdate = dbContact;
+            dbContact.FullName = contact.FullName;
+            dbContact.Country = contact.Country;
+            dbContact.CompanyName = contact.CompanyName;
+            dbContact.Email = contact.Email;
 
-            db.Entry(PartnerToUpdate).State = EntityState.Modified;
+            db.Entry(dbContact).State = EntityState.Modified;
 
             try
             {
@@ -91,7 +92,8 @@ namespace CRM.WebApi.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ContactExists(id))
+                // need to add transaction rollback
+                if (!ContactExists(contact.GuID))
                 {
                     return NotFound();
                 }
@@ -104,7 +106,7 @@ namespace CRM.WebApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Contacts
+        // POST: api/Contacts (MyContact model from body)
         [ResponseType(typeof(MyContact))]
         public IHttpActionResult PostContact([FromBody]MyContact contact)
         {
@@ -124,12 +126,24 @@ namespace CRM.WebApi.Controllers
                 GuID = Guid.NewGuid()
             };
             
-
+            // exception handling need
             db.Contacts.Add(dbCont);
             db.SaveChanges();
 
             return CreatedAtRoute("DefaultApi", new { id = dbCont.GuID}, contact);
         }
+
+        //[Route("api/Contacts/upload")]
+        //public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
+        //{
+        //    return Ok();
+        //}
+
+        //[Route("api/Contacts/query")]
+        //public IHttpActionResult PostQuery([FromBody]  file, [FromUri] string query)
+        //{
+        //    return Ok();
+        //}
 
         // DELETE: api/Contacts/5
         [ResponseType(typeof(MyContact))]
@@ -147,32 +161,11 @@ namespace CRM.WebApi.Controllers
             return Ok(contact);
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
+        // Private methods used in actions
         private bool ContactExists(Guid id)
         {
             return db.Contacts.Count(e => e.GuID == id) > 0;
         }
-
-
-        //[Route("api/Contacts/upload")]
-        //public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
-        //{
-        //    return Ok();
-        //}
-
-        //[Route("api/Contacts/query")]
-        //public IHttpActionResult PostQuery([FromBody]  file, [FromUri] string query)
-        //{
-        //    return Ok();
-        //}
 
         private List<MyContact> FromDbContactToMyContact(List<Contact> contacts)
         {
@@ -184,6 +177,16 @@ namespace CRM.WebApi.Controllers
             }
 
             return MyContactList;
+        }
+
+        // Closing database connection in overrided controller dispose method
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

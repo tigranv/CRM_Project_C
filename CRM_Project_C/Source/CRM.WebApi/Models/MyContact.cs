@@ -12,11 +12,11 @@ namespace CRM.WebApi.Models
         {
             GuID = new Guid();
             DateInserted = null;
-            EmailLists = new List<string>();
+            EmailLists = new Dictionary<int, string>();
         }
         public MyContact(Contact contact)
         {
-            EmailLists = new List<string>();
+            EmailLists = new Dictionary<int, string>();
             FullName = contact.FullName;
             Position = contact.Position;
             Email = contact.Email;
@@ -27,7 +27,7 @@ namespace CRM.WebApi.Models
 
             foreach (var item in contact.EmailLists)
             {
-                EmailLists.Add(item.EmailListName);
+                EmailLists.Add(item.EmailListID, item.EmailListName);
             }
         }
 
@@ -38,6 +38,6 @@ namespace CRM.WebApi.Models
         public string Email { get; set; }
         public Guid GuID { get; set; }
         public DateTime? DateInserted { get; set; }
-        public  List<string> EmailLists { get; set; }
+        public  Dictionary<int, string> EmailLists { get; set; }
     }
 }

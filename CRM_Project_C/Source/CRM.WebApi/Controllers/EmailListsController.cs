@@ -64,9 +64,9 @@ namespace CRM.WebApi.Controllers
 
             dbEmailListToUpdate.EmailListName = emailList.EmailListName;
             ICollection<Contact> UpdatedContacts = new List<Contact>();
-            foreach (string item in emailList.Contacts)
+            foreach(var item in emailList.Contacts)
             {
-                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.Email == item));
+                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.Key));
             }
 
             dbEmailListToUpdate.Contacts.Clear();
@@ -102,9 +102,9 @@ namespace CRM.WebApi.Controllers
             }
 
             ICollection<Contact> AddeddContacts = new List<Contact>();
-            foreach (string item in emailList.Contacts)
+            foreach (var item in emailList.Contacts)
             {
-                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.Email == item));
+                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.Key));
             }
 
             EmailList NewEmailList = new EmailList()
