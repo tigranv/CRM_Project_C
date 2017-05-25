@@ -157,10 +157,6 @@
       <Project>{297430c3-ab83-4724-a4ed-c0dde577b7cc}</Project>
       <Name>CRM.EntityFrameWorkLib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\CRM.MethodsLib\CRM.MethodsLib.csproj">
-      <Project>{77d5b97a-33f1-4dbb-9e54-6a58718ee20b}</Project>
-      <Name>CRM.MethodsLib</Name>
-    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
