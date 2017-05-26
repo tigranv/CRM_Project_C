@@ -58,7 +58,7 @@ namespace CRM.WebApi.Infrastructure
             return await db.Contacts.CountAsync(e => e.GuID == id) > 0;
         }
 
-        public async Task<bool> SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
+        public async Task SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
             // send email to all contacts of ContactsToSend with text $"Hello {Contact.Name} your message is {TamplateId}"
             // //testing
@@ -69,7 +69,7 @@ namespace CRM.WebApi.Infrastructure
                 SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
 
                 mail.From = new MailAddress("h_lusy@yahoo.com");
-                mail.To.Add("tsovinar.ghazaryan@yahoo.com"/*item.Email*/);
+                mail.To.Add(/*"tsovinar.ghazaryan@yahoo.com"*/string.Join(",",ContactsToSend.Select(x=>x.Email)));
                 mail.Subject = "Test Mail";
                 mail.Body = "This is for testing SMTP mail from GMAIL";
 
@@ -79,6 +79,7 @@ namespace CRM.WebApi.Infrastructure
                 { return true; };
 
                SmtpServer.Send(mail);
+              
             }
 
         }

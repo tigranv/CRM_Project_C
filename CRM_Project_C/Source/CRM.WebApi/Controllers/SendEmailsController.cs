@@ -17,14 +17,15 @@ namespace CRM.WebApi.Controllers
     public class SendEmailsController : ApiController
     {
         ApplicationManager AppManager = new ApplicationManager();
-
+        
         public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> GuIdList, [FromUri] int TamplateId)
         {
             List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(GuIdList);
             if (ReferenceEquals(ContactsToSend, null)) return NotFound();
 
-            if (await AppManager.SendEmailToContacts(ContactsToSend, TamplateId)) return Ok();
-            return BadRequest();
+            await AppManager.SendEmailToContacts(ContactsToSend, TamplateId);
+                return Ok();
+
         }
 
         protected override void Dispose(bool disposing)
