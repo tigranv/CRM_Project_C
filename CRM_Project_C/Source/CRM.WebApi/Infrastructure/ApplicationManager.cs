@@ -4,6 +4,7 @@ using LinqToExcel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -25,13 +26,78 @@ namespace CRM.WebApi.Infrastructure
             return await db.Contacts.ToListAsync();
         }
 
-        public List<ResponseContact> FromDbContactToResponseContact(List<Contact> contacts)
+        public async Task<bool> UpdateContact(ViewContact contact)
         {
-            List<ResponseContact> MyContactList = new List<ResponseContact>();
+            Contact dbContactToUpdate = await GetContactByGuId(contact.GuID);
+
+            if (dbContactToUpdate == null) return false;
+
+            dbContactToUpdate.FullName = contact.FullName;
+            dbContactToUpdate.Country = contact.Country;
+            dbContactToUpdate.CompanyName = contact.CompanyName;
+            dbContactToUpdate.Email = contact.Email;
+
+            db.Entry(dbContactToUpdate).State = EntityState.Modified;
+
+            try
+            {
+                await db.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // need to add transaction rollback
+                if (!(await ContactExists(contact.GuID)))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw ;
+                }
+            }
+        }
+
+        public async Task<bool> CreateContact(ViewContact contact)
+        {
+            Contact dbCont = new Contact()
+            {
+                FullName = contact.FullName,
+                Position = contact.Position,
+                Email = contact.Email,
+                Country = contact.Country,
+                CompanyName = contact.CompanyName,
+                DateInserted = DateTime.Now,
+                GuID = Guid.NewGuid()
+            };
+
+            db.Contacts.Add(dbCont);
+            try
+            {
+                await db.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // need to add transaction rollback
+                if (!(await ContactExists(contact.GuID)))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        public List<ViewContact> FromDbContactToResponseContact(List<Contact> contacts)
+        {
+            List<ViewContact> MyContactList = new List<ViewContact>();
 
             foreach (var contact in contacts)
             {
-                MyContactList.Add(new ResponseContact(contact));
+                MyContactList.Add(new ViewContact(contact));
             }
 
             return MyContactList;
@@ -58,30 +124,44 @@ namespace CRM.WebApi.Infrastructure
             return await db.Contacts.CountAsync(e => e.GuID == id) > 0;
         }
 
-        public async Task SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
+        public async Task<int> GetPagies(int perPage)
+        {
+            return await db.Contacts.CountAsync() >= perPage ? (await db.Contacts.CountAsync() % perPage == 0) ?
+                (await db.Contacts.CountAsync() / perPage) : (await db.Contacts.CountAsync() / perPage + 1) : 1;
+        }
+
+        public async Task<List<Contact>> GetContactsByPage(int start, int rows, bool ord)
+        {
+            db.Configuration.LazyLoadingEnabled = false;
+            var dbContacts = await (ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToListAsync() :
+                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToListAsync());
+
+            return dbContacts;
+        }
+
+        public async Task<bool> SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
             // send email to all contacts of ContactsToSend with text $"Hello {Contact.Name} your message is {TamplateId}"
             // //testing
 
-            foreach (var item in ContactsToSend)
-            {
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
+            //foreach (var item in ContactsToSend)
+            //{
+            //    MailMessage mail = new MailMessage();
+            //    SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
 
                 mail.From = new MailAddress("h_lusy@yahoo.com");
-                mail.To.Add(string.Join(",",ContactsToSend.Select(x=>x.Email)));
+                mail.To.Add("tsovinar.ghazaryan@yahoo.com"/*item.Email*/);
                 mail.Subject = "Test Mail";
                 mail.Body = "This is for testing SMTP mail from GMAIL";
 
 
-                ServicePointManager.ServerCertificateValidationCallback = delegate
-                (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                { return true; };
 
                SmtpServer.Send(mail);
-              
             }
 
+            //   SmtpServer.Send(mail);
+            //}
+            throw new Exception();
         }
 
         public async Task<List<Contact>> GetContactsFromFile(byte[] byteArray)
