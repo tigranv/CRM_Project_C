@@ -59,7 +59,7 @@ namespace CRM.WebApi.Infrastructure
                 catch (Exception)
                 {
 
-                    throw;
+                          throw;
                 }
                
             }
