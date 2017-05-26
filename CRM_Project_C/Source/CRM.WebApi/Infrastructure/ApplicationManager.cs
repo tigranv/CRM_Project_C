@@ -69,7 +69,7 @@ namespace CRM.WebApi.Infrastructure
                 SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
 
                 mail.From = new MailAddress("h_lusy@yahoo.com");
-                mail.To.Add(/*"tsovinar.ghazaryan@yahoo.com"*/string.Join(",",ContactsToSend.Select(x=>x.Email)));
+                mail.To.Add(string.Join(",",ContactsToSend.Select(x=>x.Email)));
                 mail.Subject = "Test Mail";
                 mail.Body = "This is for testing SMTP mail from GMAIL";
 
