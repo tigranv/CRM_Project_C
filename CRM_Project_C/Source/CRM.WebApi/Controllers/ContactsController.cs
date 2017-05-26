@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using CRM.WebApi.Models;
 using System.Data.SqlClient;
 using System.Web.Routing;
+using CRM.WebApi.Infrastructure;
+using System.Threading.Tasks;
 
 //TODO: Transactions need to be added
 //TODO: Authentication must be added
@@ -23,36 +25,32 @@ namespace CRM.WebApi.Controllers
     public class ContactsController : ApiController
     {      
         private CRMDataBaseModel db = new CRMDataBaseModel();
+        ApplicationManager AppManager = new ApplicationManager();
 
         // GET: api/Contacts
-        public List<MyContact> GetContacts()
+        public async Task<IHttpActionResult> GetContacts()
         {
-            db.Configuration.LazyLoadingEnabled = false;
-            return FromDbContactToMyContact(db.Contacts.ToList());
+           return Ok(AppManager.FromDbContactToResponseContact(await AppManager.GetAllContacts()));      
         }
 
         // GET: api/Contacts/Guid
-        [ResponseType(typeof(MyContact))]
-        public IHttpActionResult GetContact(Guid id)
+        [ResponseType(typeof(ResponseContact))]
+        public async Task<IHttpActionResult> GetContact(Guid guid)
         {
-            var contact = db.Contacts.FirstOrDefault(t => t.GuID == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(new MyContact(contact));
+            Contact contact = await AppManager.GetContactByGuId(guid);
+            if (ReferenceEquals(contact, null)) return NotFound();
+            return Ok(new ResponseContact(contact));
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
-        [ResponseType(typeof(MyContact))]
+        [ResponseType(typeof(ResponseContact))]
         public IHttpActionResult GetOrderedContactsByPage(int start, int rows, bool ord)
         {
             db.Configuration.LazyLoadingEnabled = false;
             var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList():
                 db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
 
-            return Ok(FromDbContactToMyContact(dbContacts));
+            return Ok(AppManager.FromDbContactToResponseContact(dbContacts));
         }
 
         // GET: api/Contacts/pages/5
@@ -62,9 +60,9 @@ namespace CRM.WebApi.Controllers
             return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage):(db.Contacts.Count() / perPage +1): 1;
         }
 
-        // PUT: api/Contacts (MyContact model from body)
+        // PUT: api/Contacts (ResponseContact model from body)
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutContact([FromBody]MyContact contact)
+        public IHttpActionResult PutContact([FromBody]ResponseContact contact)
         {
             if (!ModelState.IsValid)
             {
@@ -78,7 +76,6 @@ namespace CRM.WebApi.Controllers
                 return NotFound();
             }
 
-            //Contact PartnerToUpdate = dbContact;
             dbContact.FullName = contact.FullName;
             dbContact.Country = contact.Country;
             dbContact.CompanyName = contact.CompanyName;
@@ -106,9 +103,9 @@ namespace CRM.WebApi.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Contacts (MyContact model from body)
-        [ResponseType(typeof(MyContact))]
-        public IHttpActionResult PostContact([FromBody]MyContact contact)
+        // POST: api/Contacts (ResponseContact model from body)
+        [ResponseType(typeof(ResponseContact))]
+        public IHttpActionResult PostContact([FromBody]ResponseContact contact)
         {
             if (!ModelState.IsValid)
             {
@@ -146,7 +143,7 @@ namespace CRM.WebApi.Controllers
         //}
 
         // DELETE: api/Contacts/5
-        [ResponseType(typeof(MyContact))]
+        [ResponseType(typeof(ResponseContact))]
         public IHttpActionResult DeleteContact(Guid id)
         {
             var contact = db.Contacts.FirstOrDefault(t => t.GuID == id);
@@ -167,17 +164,7 @@ namespace CRM.WebApi.Controllers
             return db.Contacts.Count(e => e.GuID == id) > 0;
         }
 
-        private List<MyContact> FromDbContactToMyContact(List<Contact> contacts)
-        {
-            List<MyContact> MyContactList = new List<MyContact>();
-
-            foreach (var contact in contacts)
-            {
-                MyContactList.Add(new MyContact(contact));
-            }
-
-            return MyContactList;
-        }
+        
 
         // Closing database connection in overrided controller dispose method
         protected override void Dispose(bool disposing)

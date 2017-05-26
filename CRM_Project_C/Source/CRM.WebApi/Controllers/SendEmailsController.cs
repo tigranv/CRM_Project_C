@@ -1,41 +1,39 @@
 ﻿using CRM.EntityFrameWorkLib;
+using CRM.WebApi.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mail;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace CRM.WebApi.Controllers
 {
     public class SendEmailsController : ApiController
     {
+        ApplicationManager AppManager = new ApplicationManager();
 
-        private void SendEmailToList(List<Contact> ContactsList)
+        public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> GuIdList, [FromUri] int TamplateId)
         {
-            foreach (var item in ContactsList)
+            List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(GuIdList);
+            if (ReferenceEquals(ContactsToSend, null)) return NotFound();
+
+            if (await AppManager.SendEmailToContacts(ContactsToSend, TamplateId)) return Ok();
+            return BadRequest();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
             {
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
-
-                mail.From = new MailAddress("h_lusy@yahoo.com");
-                mail.To.Add("tsovinar.ghazaryan@yahoo.com"/*ContactsList[item].Email*/);
-                mail.Subject = "Test Mail";
-                mail.Body = "This is for testing SMTP mail from GMAIL";
-
-                SmtpServer.Port = 587;
-                SmtpServer.Credentials = new System.Net.NetworkCredential("login", "password");
-                SmtpServer.EnableSsl = true;
-
-                ServicePointManager.ServerCertificateValidationCallback = delegate
-                (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                { return true; };
-
-                SmtpServer.Send(mail);
+                AppManager.Dispose();
             }
+            base.Dispose(disposing);
         }
     }
 }
