@@ -5,7 +5,7 @@ using System.Web;
 
 namespace CRM.WebApi.Models
 {
-    public class FilteringRqeuestModel
+    public class QueryResponseContact
     {
     }
 }

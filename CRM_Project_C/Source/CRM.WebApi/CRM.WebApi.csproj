@@ -156,8 +156,8 @@
     <Compile Include="Infrastructure\EmailProvider.cs" />
     <Compile Include="Infrastructure\ModelFactory.cs" />
     <Compile Include="Infrastructure\ParsingProvider.cs" />
-    <Compile Include="Models\FilteringResponseModel.cs" />
-    <Compile Include="Models\FilteringRqeuestModel.cs" />
+    <Compile Include="Models\QueryResponseContact.cs" />
+    <Compile Include="Models\QueryRequestContact.cs" />
     <Compile Include="Models\ViewContact.cs" />
     <Compile Include="Models\ViewEmailList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
