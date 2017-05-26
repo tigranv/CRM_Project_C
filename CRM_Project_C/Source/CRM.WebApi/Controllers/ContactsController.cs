@@ -24,7 +24,6 @@ namespace CRM.WebApi.Controllers
 {
     public class ContactsController : ApiController
     {      
-        private CRMDataBaseModel db = new CRMDataBaseModel();
         ApplicationManager appManager = new ApplicationManager();
 
         // GET: api/Contacts
@@ -32,7 +31,7 @@ namespace CRM.WebApi.Controllers
         {
             try
             {
-                List<ViewContact> allcontacts = appManager.FromDbContactToResponseContact(await appManager.GetAllContacts());
+                List<ViewContact> allcontacts = ModelFactory.FromDbContactToResponseContact(await appManager.GetAllContacts());
                 if (allcontacts == null) return NotFound();
                 return Ok(allcontacts);
             }
@@ -83,34 +82,19 @@ namespace CRM.WebApi.Controllers
             return InternalServerError();
         }
 
-       
-
         [Route("api/Contacts/upload")]
         public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
         {
             return Ok();
         }
 
-        //[Route("api/Contacts/query")]
-        //public IHttpActionResult PostQuery([FromBody]  file, [FromUri] string query)
-        //{
-        //    return Ok();
-        //}
-
         // DELETE: api/Contacts/5
         [ResponseType(typeof(ViewContact))]
         public async Task<IHttpActionResult> DeleteContact(Guid id)
         {
-            var contact =  await db.Contacts.FirstOrDefaultAsync(t => t.GuID == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
+            if(!(await appManager.DeleteCon(id))) return BadRequest();
 
-            db.Contacts.Remove(contact);
-            db.SaveChanges();
-
-            return Ok(contact);
+            return Ok();
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
@@ -118,7 +102,7 @@ namespace CRM.WebApi.Controllers
         public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
         {
 
-            return Ok(appManager.FromDbContactToResponseContact(await appManager.GetContactsByPage(start, rows, ord)));
+            return Ok(ModelFactory.FromDbContactToResponseContact(await appManager.GetContactsByPage(start, rows, ord)));
         }
 
         // GET: api/Contacts/pages/5
@@ -132,7 +116,7 @@ namespace CRM.WebApi.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                appManager.Dispose();
             }
             base.Dispose(disposing);
         }
