@@ -22,7 +22,7 @@ namespace CRM.WebApi.Infrastructure
                 mail.From = new MailAddress("h_lusy@yahoo.com");
                 mail.To.Add(string.Join(",", ContactsToSend.Select(x => x.Email)));
                 mail.Subject = "Test Mail";
-                mail.Body = "This is for testing SMTP mail from GMAIL";
+                mail.Body = "This is for testing SMTP mail from Bet-C group";
 
                 ServicePointManager.ServerCertificateValidationCallback = delegate
                 (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)

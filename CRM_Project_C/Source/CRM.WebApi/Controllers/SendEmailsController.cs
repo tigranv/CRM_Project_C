@@ -18,12 +18,12 @@ namespace CRM.WebApi.Controllers
     {
         ApplicationManager AppManager = new ApplicationManager();
         EmailProvider emailprov = new EmailProvider();
-        public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> GuIdList, [FromUri] int TamplateId)
+        public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> GuIdList, [FromUri] int tamplate)
         {
             List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(GuIdList);
             if (ReferenceEquals(ContactsToSend, null)) return NotFound();
 
-            emailprov.SendEmailToContacts(ContactsToSend, TamplateId);
+            emailprov.SendEmailToContacts(ContactsToSend, tamplate);
                 return Ok();
         }
 

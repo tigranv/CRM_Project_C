@@ -20,5 +20,17 @@ namespace CRM.WebApi.Infrastructure
 
             return MyContactList;
         }
+
+        public static List<ViewContactSimple> FromDbContactToViewContactSimple(List<Contact> contacts)
+        {
+            List<ViewContactSimple> MyContactList = new List<ViewContactSimple>();
+
+            foreach (var contact in contacts)
+            {
+                MyContactList.Add(new ViewContactSimple(contact));
+            }
+
+            return MyContactList;
+        }
     }
 }

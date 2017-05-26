@@ -31,7 +31,7 @@ namespace CRM.WebApi.Controllers
         {
             try
             {
-                List<ViewContact> allcontacts = ModelFactory.FromDbContactToViewContact(await appManager.GetAllContacts());
+                List<ViewContactSimple> allcontacts = ModelFactory.FromDbContactToViewContactSimple(await appManager.GetAllContacts());
                 if (allcontacts == null) return NotFound();
                 return Ok(allcontacts);
             }
