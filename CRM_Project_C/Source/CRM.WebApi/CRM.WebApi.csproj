@@ -148,6 +148,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\ApplicationManager.cs" />
+    <Compile Include="Infrastructure\EmailProvider.cs" />
+    <Compile Include="Infrastructure\ModelFactory.cs" />
+    <Compile Include="Infrastructure\ParsingProvider.cs" />
+    <Compile Include="Models\FilteringResponseModel.cs" />
+    <Compile Include="Models\FilteringRqeuestModel.cs" />
     <Compile Include="Models\ResponseContact.cs" />
     <Compile Include="Models\ResponseEmailList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
