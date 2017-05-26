@@ -54,7 +54,7 @@ namespace CRM.WebApi.Infrastructure
         public async Task<bool> SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
             // send email to all contacts of ContactsToSend with text $"Hello {Contact.Name} your message is {TamplateId}"
-            // testing
+            // test by Tigran
             throw new Exception();
         }
 
