@@ -28,41 +28,39 @@ namespace CRM.WebApi.Controllers
         ApplicationManager AppManager = new ApplicationManager();
 
         // GET: api/Contacts
-        public async Task<IHttpActionResult> GetContacts()
+        public async Task<IHttpActionResult> GetAllContacts()
         {
-           return Ok(AppManager.FromDbContactToResponseContact(await AppManager.GetAllContacts()));      
+            try
+            {
+                List<ResponseContact> allcontacts = AppManager.FromDbContactToResponseContact(await AppManager.GetAllContacts());
+                if (allcontacts == null) return NotFound();
+                return Ok(allcontacts);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }    
         }
 
         // GET: api/Contacts/Guid
         [ResponseType(typeof(ResponseContact))]
-        public async Task<IHttpActionResult> GetContact(Guid guid)
+        public async Task<IHttpActionResult> GetContactById(Guid guid)
         {
-            Contact contact = await AppManager.GetContactByGuId(guid);
-            if (ReferenceEquals(contact, null)) return NotFound();
-            return Ok(new ResponseContact(contact));
-        }
-
-        // GET: api/Contacts?start=2&rows=3&ord=false
-        [ResponseType(typeof(ResponseContact))]
-        public IHttpActionResult GetOrderedContactsByPage(int start, int rows, bool ord)
-        {
-            db.Configuration.LazyLoadingEnabled = false;
-            var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList():
-                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
-
-            return Ok(AppManager.FromDbContactToResponseContact(dbContacts));
-        }
-
-        // GET: api/Contacts/pages/5
-        [Route("api/Contacts/pages")]
-        public int GetNumberOfPagies(int perPage)
-        {
-            return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage):(db.Contacts.Count() / perPage +1): 1;
+            try
+            {
+                Contact contact = await AppManager.GetContactByGuId(guid);
+                if (contact == null) return NotFound();
+                return Ok(new ResponseContact(contact));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }     
         }
 
         // PUT: api/Contacts (ResponseContact model from body)
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutContact([FromBody]ResponseContact contact)
+        public async Task<IHttpActionResult> PutContact([FromBody]ResponseContact contact)
         {
             if (!ModelState.IsValid)
             {
@@ -90,7 +88,7 @@ namespace CRM.WebApi.Controllers
             catch (DbUpdateConcurrencyException)
             {
                 // need to add transaction rollback
-                if (!ContactExists(contact.GuID))
+                if (!(await AppManager.ContactExists(contact.GuID)))
                 {
                     return NotFound();
                 }
@@ -130,6 +128,24 @@ namespace CRM.WebApi.Controllers
             return CreatedAtRoute("DefaultApi", new { id = dbCont.GuID}, contact);
         }
 
+        // GET: api/Contacts?start=2&rows=3&ord=false
+        [ResponseType(typeof(ResponseContact))]
+        public IHttpActionResult GetOrderedContactsByPage(int start, int rows, bool ord)
+        {
+            db.Configuration.LazyLoadingEnabled = false;
+            var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList() :
+                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
+
+            return Ok(AppManager.FromDbContactToResponseContact(dbContacts));
+        }
+
+        // GET: api/Contacts/pages/5
+        [Route("api/Contacts/pages")]
+        public int GetNumberOfPagies(int perPage)
+        {
+            return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage) : (db.Contacts.Count() / perPage + 1) : 1;
+        }
+
         //[Route("api/Contacts/upload")]
         //public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
         //{
@@ -144,9 +160,9 @@ namespace CRM.WebApi.Controllers
 
         // DELETE: api/Contacts/5
         [ResponseType(typeof(ResponseContact))]
-        public IHttpActionResult DeleteContact(Guid id)
+        public async Task<IHttpActionResult> DeleteContact(Guid id)
         {
-            var contact = db.Contacts.FirstOrDefault(t => t.GuID == id);
+            var contact =  await db.Contacts.FirstOrDefaultAsync(t => t.GuID == id);
             if (contact == null)
             {
                 return NotFound();
@@ -156,17 +172,8 @@ namespace CRM.WebApi.Controllers
             db.SaveChanges();
 
             return Ok(contact);
-        }
+        }    
 
-        // Private methods used in actions
-        private bool ContactExists(Guid id)
-        {
-            return db.Contacts.Count(e => e.GuID == id) > 0;
-        }
-
-        
-
-        // Closing database connection in overrided controller dispose method
         protected override void Dispose(bool disposing)
         {
             if (disposing)

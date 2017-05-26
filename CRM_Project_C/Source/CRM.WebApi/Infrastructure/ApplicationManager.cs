@@ -51,6 +51,11 @@ namespace CRM.WebApi.Infrastructure
             return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
         }
 
+        public async Task<bool> ContactExists(Guid id)
+        {
+            return await db.Contacts.CountAsync(e => e.GuID == id) > 0;
+        }
+
         public async Task<bool> SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
             // send email to all contacts of ContactsToSend with text $"Hello {Contact.Name} your message is {TamplateId}"
