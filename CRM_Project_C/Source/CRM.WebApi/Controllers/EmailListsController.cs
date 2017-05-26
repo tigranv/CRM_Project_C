@@ -19,22 +19,22 @@ namespace CRM.WebApi.Controllers
         private CRMDataBaseModel db = new CRMDataBaseModel();
         
         // GET: api/EmailLists
-        public List<ResponseEmailList> GetEmailLists()
+        public List<ViewEmailList> GetEmailLists()
         {
             db.Configuration.LazyLoadingEnabled = false;
             List<EmailList> DbEmailList = db.EmailLists.ToListAsync().Result;
-            List<ResponseEmailList> MyemailList = new List<ResponseEmailList>();
+            List<ViewEmailList> MyemailList = new List<ViewEmailList>();
 
             foreach (var elist in DbEmailList)
             {
-                MyemailList.Add(new ResponseEmailList(elist));
+                MyemailList.Add(new ViewEmailList(elist));
             }
 
             return MyemailList;
         }
 
         // GET: api/EmailLists/5
-        [ResponseType(typeof(ResponseEmailList))]
+        [ResponseType(typeof(ViewEmailList))]
         public IHttpActionResult GetEmailList(int id)
         {
             EmailList emailList = db.EmailLists.Find(id);
@@ -43,12 +43,12 @@ namespace CRM.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(new ResponseEmailList(emailList));
+            return Ok(new ViewEmailList(emailList));
         }
 
         // PUT: api/EmailLists/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmailList([FromBody] ResponseEmailList emailList)
+        public IHttpActionResult PutEmailList([FromBody] ViewEmailList emailList)
         {
             if (!ModelState.IsValid)
             {
@@ -93,7 +93,7 @@ namespace CRM.WebApi.Controllers
 
         // POST: api/EmailLists
         [ResponseType(typeof(EmailList))]
-        public IHttpActionResult PostEmailList([FromBody] ResponseEmailList emailList)
+        public IHttpActionResult PostEmailList([FromBody] ViewEmailList emailList)
         {
             if (!ModelState.IsValid)
             {

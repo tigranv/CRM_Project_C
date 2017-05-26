@@ -25,14 +25,14 @@ namespace CRM.WebApi.Controllers
     public class ContactsController : ApiController
     {      
         private CRMDataBaseModel db = new CRMDataBaseModel();
-        ApplicationManager AppManager = new ApplicationManager();
+        ApplicationManager appManager = new ApplicationManager();
 
         // GET: api/Contacts
         public async Task<IHttpActionResult> GetAllContacts()
         {
             try
             {
-                List<ResponseContact> allcontacts = AppManager.FromDbContactToResponseContact(await AppManager.GetAllContacts());
+                List<ViewContact> allcontacts = appManager.FromDbContactToResponseContact(await appManager.GetAllContacts());
                 if (allcontacts == null) return NotFound();
                 return Ok(allcontacts);
             }
@@ -43,14 +43,14 @@ namespace CRM.WebApi.Controllers
         }
 
         // GET: api/Contacts/Guid
-        [ResponseType(typeof(ResponseContact))]
+        [ResponseType(typeof(ViewContact))]
         public async Task<IHttpActionResult> GetContactById(Guid guid)
         {
             try
             {
-                Contact contact = await AppManager.GetContactByGuId(guid);
+                Contact contact = await appManager.GetContactByGuId(guid);
                 if (contact == null) return NotFound();
-                return Ok(new ResponseContact(contact));
+                return Ok(new ViewContact(contact));
             }
             catch (Exception ex)
             {
@@ -60,97 +60,36 @@ namespace CRM.WebApi.Controllers
 
         // PUT: api/Contacts (ResponseContact model from body)
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutContact([FromBody]ResponseContact contact)
+        public async Task<IHttpActionResult> PutContact([FromBody]ViewContact contact)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            Contact dbContact = db.Contacts.FirstOrDefault(t => t.GuID == contact.GuID);
+            if(await appManager.UpdateContact(contact)) return StatusCode(HttpStatusCode.NoContent);
 
-            if (dbContact == null)
-            {
-                return NotFound();
-            }
-
-            dbContact.FullName = contact.FullName;
-            dbContact.Country = contact.Country;
-            dbContact.CompanyName = contact.CompanyName;
-            dbContact.Email = contact.Email;
-
-            db.Entry(dbContact).State = EntityState.Modified;
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                // need to add transaction rollback
-                if (!(await AppManager.ContactExists(contact.GuID)))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return StatusCode(HttpStatusCode.NoContent);
+            return NotFound();
         }
 
         // POST: api/Contacts (ResponseContact model from body)
-        [ResponseType(typeof(ResponseContact))]
-        public IHttpActionResult PostContact([FromBody]ResponseContact contact)
+        [ResponseType(typeof(ViewContact))]
+        public async Task<IHttpActionResult> PostContact([FromBody]ViewContact contact)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            Contact dbCont = new Contact()
-            {
-                FullName = contact.FullName,
-                Position = contact.Position,
-                Email = contact.Email,
-                Country = contact.Country,
-                CompanyName = contact.CompanyName,
-                DateInserted = DateTime.Now,
-                GuID = Guid.NewGuid()
-            };
-            
-            // exception handling need
-            db.Contacts.Add(dbCont);
-            db.SaveChanges();
+            if (await appManager.CreateContact(contact)) return Created("Contacts", contact);
 
-            return CreatedAtRoute("DefaultApi", new { id = dbCont.GuID}, contact);
+            return InternalServerError();
         }
 
-        // GET: api/Contacts?start=2&rows=3&ord=false
-        [ResponseType(typeof(ResponseContact))]
-        public IHttpActionResult GetOrderedContactsByPage(int start, int rows, bool ord)
+       
+
+        [Route("api/Contacts/upload")]
+        public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
         {
-            db.Configuration.LazyLoadingEnabled = false;
-            var dbContacts = ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToList() :
-                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToList();
-
-            return Ok(AppManager.FromDbContactToResponseContact(dbContacts));
+            return Ok();
         }
-
-        // GET: api/Contacts/pages/5
-        [Route("api/Contacts/pages")]
-        public int GetNumberOfPagies(int perPage)
-        {
-            return db.Contacts.Count() >= perPage ? (db.Contacts.Count() % perPage == 0) ? (db.Contacts.Count() / perPage) : (db.Contacts.Count() / perPage + 1) : 1;
-        }
-
-        //[Route("api/Contacts/upload")]
-        //public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
-        //{
-        //    return Ok();
-        //}
 
         //[Route("api/Contacts/query")]
         //public IHttpActionResult PostQuery([FromBody]  file, [FromUri] string query)
@@ -159,7 +98,7 @@ namespace CRM.WebApi.Controllers
         //}
 
         // DELETE: api/Contacts/5
-        [ResponseType(typeof(ResponseContact))]
+        [ResponseType(typeof(ViewContact))]
         public async Task<IHttpActionResult> DeleteContact(Guid id)
         {
             var contact =  await db.Contacts.FirstOrDefaultAsync(t => t.GuID == id);
@@ -172,7 +111,22 @@ namespace CRM.WebApi.Controllers
             db.SaveChanges();
 
             return Ok(contact);
-        }    
+        }
+
+        // GET: api/Contacts?start=2&rows=3&ord=false
+        [ResponseType(typeof(ViewContact))]
+        public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
+        {
+
+            return Ok(appManager.FromDbContactToResponseContact(await appManager.GetContactsByPage(start, rows, ord)));
+        }
+
+        // GET: api/Contacts/pages/5
+        [Route("api/Contacts/pages")]
+        public async Task<int> GetNumberOfPagies(int perPage)
+        {
+            return await appManager.GetPagies(perPage);
+        }
 
         protected override void Dispose(bool disposing)
         {

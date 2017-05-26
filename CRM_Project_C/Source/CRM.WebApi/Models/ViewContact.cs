@@ -6,15 +6,15 @@ using System.Web;
 
 namespace CRM.WebApi.Models
 {
-    public class ResponseContact
+    public class ViewContact
     {
-        public ResponseContact()
+        public ViewContact()
         {
             GuID = new Guid();
             DateInserted = null;
             EmailLists = new Dictionary<int, string>();
         }
-        public ResponseContact(Contact contact)
+        public ViewContact(Contact contact)
         {
             EmailLists = new Dictionary<int, string>();
             FullName = contact.FullName;

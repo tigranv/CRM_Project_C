@@ -6,13 +6,13 @@ using System.Web;
 
 namespace CRM.WebApi.Models
 {
-    public class ResponseEmailList
+    public class ViewEmailList
     {
-        public ResponseEmailList()
+        public ViewEmailList()
         {
             Contacts = new Dictionary<Guid, string>();
         }
-        public ResponseEmailList(EmailList emaillist)
+        public ViewEmailList(EmailList emaillist)
         {
             EmailListID = emaillist.EmailListID;
             EmailListName = emaillist.EmailListName;
