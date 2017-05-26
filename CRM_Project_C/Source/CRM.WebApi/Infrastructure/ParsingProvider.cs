@@ -42,7 +42,6 @@ namespace CRM.WebApi.Infrastructure
                     contact.GuID = Guid.NewGuid();
                     contact.DateInserted = DateTime.Now;
                     contacts.Add(contact);
-                    // i have done some changes
                 }
             }
             catch (Exception)
@@ -59,7 +58,7 @@ namespace CRM.WebApi.Infrastructure
                 catch (Exception)
                 {
 
-                          throw;
+                    return null;
                 }
                
             }
