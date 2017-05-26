@@ -49,7 +49,6 @@ namespace CRM.WebApi.Infrastructure
         public async Task<Contact> GetContactByGuId(Guid guid)
         {
             return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
-            // some comment
         }
 
         public async Task<bool> SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
