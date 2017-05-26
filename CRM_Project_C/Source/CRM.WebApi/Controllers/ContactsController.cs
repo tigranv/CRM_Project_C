@@ -31,7 +31,7 @@ namespace CRM.WebApi.Controllers
         {
             try
             {
-                List<ViewContact> allcontacts = ModelFactory.FromDbContactToResponseContact(await appManager.GetAllContacts());
+                List<ViewContact> allcontacts = ModelFactory.FromDbContactToViewContact(await appManager.GetAllContacts());
                 if (allcontacts == null) return NotFound();
                 return Ok(allcontacts);
             }
@@ -102,7 +102,7 @@ namespace CRM.WebApi.Controllers
         public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
         {
 
-            return Ok(ModelFactory.FromDbContactToResponseContact(await appManager.GetContactsByPage(start, rows, ord)));
+            return Ok(ModelFactory.FromDbContactToViewContact(await appManager.GetContactsByPage(start, rows, ord)));
         }
 
         // GET: api/Contacts/pages/5

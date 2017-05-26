@@ -9,7 +9,7 @@ namespace CRM.WebApi.Infrastructure
 {
     public static class ModelFactory
     {
-        public static List<ViewContact> FromDbContactToResponseContact(List<Contact> contacts)
+        public static List<ViewContact> FromDbContactToViewContact(List<Contact> contacts)
         {
             List<ViewContact> MyContactList = new List<ViewContact>();
 

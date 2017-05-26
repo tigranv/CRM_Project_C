@@ -89,9 +89,7 @@ namespace CRM.WebApi.Infrastructure
                     throw;
                 }
             }
-        }
-
-      
+        }  
 
         public async Task<List<Contact>> GetContactsByGuIdList(List<Guid> GuIdList)
         {
@@ -142,7 +140,6 @@ namespace CRM.WebApi.Infrastructure
 
             return true;
         }
-
 
         public void Dispose()
         {
