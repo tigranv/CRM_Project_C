@@ -6,17 +6,15 @@ using System.Web;
 
 namespace CRM.WebApi.Models
 {
-    public class ViewContact
+    public class ViewContactSimple
     {
-        public ViewContact()
+        public ViewContactSimple()
         {
-            GuID = Guid.NewGuid();
-            DateInserted = DateTime.Now;
-            EmailLists = new Dictionary<int, string>();
+            GuID = new Guid();
+            DateInserted = null;
         }
-        public ViewContact(Contact contact)
+        public ViewContactSimple(Contact contact)
         {
-            EmailLists = new Dictionary<int, string>();
             FullName = contact.FullName;
             Position = contact.Position;
             Email = contact.Email;
@@ -24,11 +22,6 @@ namespace CRM.WebApi.Models
             CompanyName = contact.CompanyName;
             DateInserted = contact.DateInserted;
             GuID = contact.GuID;
-
-            foreach (var item in contact.EmailLists)
-            {
-                EmailLists.Add(item.EmailListID, item.EmailListName);
-            }
         }
 
         public string FullName { get; set; }
@@ -38,6 +31,5 @@ namespace CRM.WebApi.Models
         public string Email { get; set; }
         public Guid GuID { get; set; }
         public DateTime? DateInserted { get; set; }
-        public  Dictionary<int, string> EmailLists { get; set; }
     }
 }

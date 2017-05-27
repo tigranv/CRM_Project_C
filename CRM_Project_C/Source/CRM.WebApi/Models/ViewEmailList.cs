@@ -10,22 +10,11 @@ namespace CRM.WebApi.Models
     {
         public ViewEmailList()
         {
-            Contacts = new Dictionary<Guid, string>();
-        }
-        public ViewEmailList(EmailList emaillist)
-        {
-            EmailListID = emaillist.EmailListID;
-            EmailListName = emaillist.EmailListName;
-            Contacts = new Dictionary<Guid, string>();
-
-            foreach (var item in emaillist.Contacts)
-            {
-                Contacts.Add(item.GuID, item.Email);
-            }
+            Contacts = new List<ViewContactSimple>();
         }
 
         public int EmailListID { get; set; }
         public string EmailListName { get; set; }
-        public virtual Dictionary<Guid, string> Contacts { get; set; }
+        public List<ViewContactSimple> Contacts { get; set; }
     }
 }

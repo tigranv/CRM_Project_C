@@ -11,6 +11,7 @@ using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
 using System.Windows;
+using CRM.WebApi.Infrastructure;
 
 namespace CRM.WebApi.Controllers
 {
@@ -23,12 +24,7 @@ namespace CRM.WebApi.Controllers
         {
             db.Configuration.LazyLoadingEnabled = false;
             List<EmailList> DbEmailList = db.EmailLists.ToListAsync().Result;
-            List<ViewEmailList> MyemailList = new List<ViewEmailList>();
-
-            foreach (var elist in DbEmailList)
-            {
-                MyemailList.Add(new ViewEmailList(elist));
-            }
+            List<ViewEmailList> MyemailList = ModelFactory.EmailListToViewEmailListList(DbEmailList);
 
             return MyemailList;
         }
@@ -43,7 +39,7 @@ namespace CRM.WebApi.Controllers
                 return NotFound();
             }
 
-            return Ok(new ViewEmailList(emailList));
+            return Ok(ModelFactory.EmailListToViewEmailList(emailList));
         }
 
         // PUT: api/EmailLists/5
@@ -65,7 +61,7 @@ namespace CRM.WebApi.Controllers
             ICollection<Contact> UpdatedContacts = new List<Contact>();
             foreach(var item in emailList.Contacts)
             {
-                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.Key));
+                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.GuID));
             }
 
             dbEmailListToUpdate.Contacts.Clear();
@@ -103,7 +99,7 @@ namespace CRM.WebApi.Controllers
             ICollection<Contact> AddeddContacts = new List<Contact>();
             foreach (var item in emailList.Contacts)
             {
-                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.Key));
+                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.GuID));
             }
 
             EmailList NewEmailList = new EmailList()

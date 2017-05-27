@@ -18,13 +18,18 @@ namespace CRM.WebApi.Controllers
     {
         ApplicationManager AppManager = new ApplicationManager();
         EmailProvider emailprov = new EmailProvider();
-        public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> GuIdList, [FromUri] int TamplateId)
+        public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> guidlist, [FromUri] int template)
         {
-            List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(GuIdList);
+            List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(guidlist);
             if (ReferenceEquals(ContactsToSend, null)) return NotFound();
 
-            emailprov.SendEmailToContacts(ContactsToSend, TamplateId);
+            emailprov.SendEmailToContacts(ContactsToSend, template);
                 return Ok();
+        }
+
+        public IHttpActionResult PostSendEmails([FromUri] int tamplate, int emaillistId)
+        {
+            return Ok();
         }
 
         protected override void Dispose(bool disposing)
