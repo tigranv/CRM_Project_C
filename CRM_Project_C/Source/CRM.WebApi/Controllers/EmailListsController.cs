@@ -58,6 +58,7 @@ namespace CRM.WebApi.Controllers
             }
 
             dbEmailListToUpdate.EmailListName = emailList.EmailListName;
+     
             ICollection<Contact> UpdatedContacts = new List<Contact>();
             foreach(var item in emailList.Contacts)
             {
@@ -66,6 +67,8 @@ namespace CRM.WebApi.Controllers
 
             dbEmailListToUpdate.Contacts.Clear();
             dbEmailListToUpdate.Contacts = UpdatedContacts;
+
+
             db.Entry(dbEmailListToUpdate).State = EntityState.Modified;
 
             try

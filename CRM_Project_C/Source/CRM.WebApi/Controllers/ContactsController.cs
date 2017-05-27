@@ -49,7 +49,7 @@ namespace CRM.WebApi.Controllers
             {
                 Contact contact = await appManager.GetContactByGuId(guid);
                 if (contact == null) return NotFound();
-                return Ok(new ViewContact(contact));
+                return Ok(ModelFactory.ContactToViewContact(contact));
             }
             catch (Exception ex)
             {

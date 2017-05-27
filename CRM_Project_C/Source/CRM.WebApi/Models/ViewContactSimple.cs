@@ -10,18 +10,8 @@ namespace CRM.WebApi.Models
     {
         public ViewContactSimple()
         {
-            GuID = new Guid();
-            DateInserted = null;
-        }
-        public ViewContactSimple(Contact contact)
-        {
-            FullName = contact.FullName;
-            Position = contact.Position;
-            Email = contact.Email;
-            Country = contact.Country;
-            CompanyName = contact.CompanyName;
-            DateInserted = contact.DateInserted;
-            GuID = contact.GuID;
+            GuID = Guid.NewGuid();
+            DateInserted = DateTime.Now;
         }
 
         public string FullName { get; set; }

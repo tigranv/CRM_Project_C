@@ -78,7 +78,6 @@ namespace CRM.WebApi.Infrastructure
 
             return viewEmailList;
         }
-
         public static ViewEmailListSimple EmailListToViewEmailListSimple(EmailList emaillist)
         {
             ViewEmailListSimple viewEmailList = new ViewEmailListSimple()
@@ -89,7 +88,6 @@ namespace CRM.WebApi.Infrastructure
             
             return viewEmailList;
         }
-
         public static List<ViewEmailList> EmailListToViewEmailListList(List<EmailList> emaillists)
         {
             List<ViewEmailList> listviewEmailList = new List<ViewEmailList>();
@@ -101,7 +99,6 @@ namespace CRM.WebApi.Infrastructure
 
             return listviewEmailList;
         }
-
         public static List<ViewEmailListSimple> EmailListToViewEmailListSimpleList(List<EmailList> emaillists)
         {
             List<ViewEmailListSimple> viewEmailListSimpleList = new List<ViewEmailListSimple>();
@@ -113,6 +110,8 @@ namespace CRM.WebApi.Infrastructure
 
             return viewEmailListSimpleList;
         }
+
+
 
     }
 }

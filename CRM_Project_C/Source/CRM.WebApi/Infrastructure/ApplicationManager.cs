@@ -37,6 +37,8 @@ namespace CRM.WebApi.Infrastructure
             dbContactToUpdate.CompanyName = contact.CompanyName;
             dbContactToUpdate.Email = contact.Email;
 
+            if(contact.EmailLists == null) { }
+
             db.Entry(dbContactToUpdate).State = EntityState.Modified;
 
             try
@@ -60,6 +62,7 @@ namespace CRM.WebApi.Infrastructure
 
         public async Task<bool> CreateContact(ViewContact contact)
         {
+            if (contact.EmailLists == null) { }
             Contact dbCont = new Contact()
             {
                 FullName = contact.FullName,
@@ -129,11 +132,8 @@ namespace CRM.WebApi.Infrastructure
 
         public async Task<bool> DeleteCon(Guid id)
         {
-            var contact = await db.Contacts.FirstOrDefaultAsync(t => t.GuID == id);
-            if (contact == null)
-            {
-                return false;
-            }
+            var contact = await GetContactByGuId(id);
+            if (contact == null) return false;
 
             db.Contacts.Remove(contact);
             db.SaveChanges();
