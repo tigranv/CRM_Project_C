@@ -48,7 +48,7 @@ namespace CRM.WebApi.Infrastructure
             {
                 try
                 {
-                    path = path.Remove(path.Length - 4, 4) + "csv";
+                    path = path.Remove(path.Length - 4, 4) + ".csv";
                     File.WriteAllBytes(path, baytarray);
                     List<Contact> values = File.ReadAllLines(path)
                                  .Skip(1)
