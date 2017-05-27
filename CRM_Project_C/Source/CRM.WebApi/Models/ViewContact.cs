@@ -10,8 +10,8 @@ namespace CRM.WebApi.Models
     {
         public ViewContact()
         {
-            GuID = new Guid();
-            DateInserted = null;
+            GuID = Guid.NewGuid();
+            DateInserted = DateTime.Now;
             EmailLists = new Dictionary<int, string>();
         }
         public ViewContact(Contact contact)

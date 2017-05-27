@@ -7,5 +7,7 @@ namespace CRM.WebApi.Models
 {
     public class ViewEmailListSimple
     {
+        public int EmailListID { get; set; }
+        public string EmailListName { get; set; }
     }
 }
