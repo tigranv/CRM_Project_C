@@ -1,8 +1,4 @@
-﻿using CRM.EntityFrameWorkLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 
 namespace CRM.WebApi.Models
 {
@@ -16,5 +12,11 @@ namespace CRM.WebApi.Models
         public int EmailListID { get; set; }
         public string EmailListName { get; set; }
         public List<ViewContactSimple> Contacts { get; set; }
+    }
+
+    public class ViewEmailListSimple
+    {
+        public int EmailListID { get; set; }
+        public string EmailListName { get; set; }
     }
 }

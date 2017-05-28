@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
-using Newtonsoft.Json;
 using CRM.WebApi.Models;
-using System.Data.SqlClient;
 using System.Web.Routing;
 using CRM.WebApi.Infrastructure;
 using System.Threading.Tasks;
 
-//TODO: Transactions need to be added
 //TODO: Authentication must be added
-//TODO: Exception handling
 
 namespace CRM.WebApi.Controllers
 {
@@ -76,7 +66,6 @@ namespace CRM.WebApi.Controllers
             {
                 return InternalServerError();
             }
-
         }
 
         // POST: api/Contacts
@@ -124,13 +113,11 @@ namespace CRM.WebApi.Controllers
             {
                 return BadRequest(ex.InnerException.Message);
             }
-
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
         public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
         {
-
             return Ok(ModelFactory.ContactListToViewContactList(await appManager.GetContactsByPage(start, rows, ord)));
         }
 

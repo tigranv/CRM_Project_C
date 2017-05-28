@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
@@ -22,7 +15,7 @@ namespace CRM.WebApi.Controllers
             return db.Templates;
         }
 
-        // GET: api/Templates/5
+        // GET: api/Templates
         [ResponseType(typeof(Template))]
         public IHttpActionResult GetTemplate(int id)
         {

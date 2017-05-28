@@ -5,68 +5,59 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {
     public partial class ApplicationManager : IDisposable
     {
-
         public async Task<EmailList> GetEmailListById(int id)
         {
             return await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == id);
         }
 
-        public async Task<List<Contact>> GetAllEmaillists()
+        public async Task<List<EmailList>> GetAllEmaillists()
         {
             db.Configuration.LazyLoadingEnabled = false;
-            return await db.Contacts.ToListAsync();
+            return await db.EmailLists.ToListAsync();
         }
 
-        // update(flag = true) contact in db, or create(flag = false) new contact based on requestcontact
-        public async Task<Contact> AddOrUpdateEmailList(Contact contactToAddOrUpdate, ViewContact requestContact, bool flag)
+        // update(flag = true) emaillist in db, or create(flag = false) new emaillist based on requestemaillist
+        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, ViewEmailList requestEmailList, bool flag)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
-                contactToAddOrUpdate.FullName = requestContact.FullName;
-                contactToAddOrUpdate.Country = requestContact.Country;
-                contactToAddOrUpdate.CompanyName = requestContact.CompanyName;
-                contactToAddOrUpdate.Email = requestContact.Email;
-                contactToAddOrUpdate.Position = requestContact.Position;
+                emailListToAddOrUpdate.EmailListName = requestEmailList.EmailListName;
 
                 if (flag)
                 {
-                    if (requestContact.EmailLists.Count > 0)
+                    if (requestEmailList.Contacts.Count > 0)
                     {
-                        contactToAddOrUpdate.EmailLists.Clear();
-                        foreach (var emaillist in requestContact.EmailLists)
+                        emailListToAddOrUpdate.Contacts.Clear();
+                        foreach (var contact in requestEmailList.Contacts)
                         {
-                            contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
+                            emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == contact.GuID));
                         }
                     }
-                    db.Entry(contactToAddOrUpdate).State = EntityState.Modified;
+                    db.Entry(emailListToAddOrUpdate).State = EntityState.Modified;
                 }
                 else
                 {
-                    contactToAddOrUpdate.GuID = Guid.NewGuid();
-                    contactToAddOrUpdate.DateInserted = DateTime.Now;
-
-                    foreach (var emaillist in requestContact.EmailLists)
+                    foreach (var contact in requestEmailList.Contacts)
                     {
-                        contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
+                        emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == contact.GuID));
                     }
-                    db.Contacts.Add(contactToAddOrUpdate);
+                    db.EmailLists.Add(emailListToAddOrUpdate);
                 }
 
                 try
                 {
                     await db.SaveChangesAsync();
-                    return contactToAddOrUpdate;
+                    return emailListToAddOrUpdate;
                 }
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate)))
+                    if ((await EmailListExists(emailListToAddOrUpdate.EmailListID)))
                     {
                         return null;
                     }
@@ -76,11 +67,6 @@ namespace CRM.WebApi.Infrastructure
                     }
                 }
             }
-        }
-
-        public async Task<bool> EmailListExists(Guid id)
-        {
-            return await db.Contacts.CountAsync(e => e.GuID == id) > 0;
         }
 
         public async Task<bool> DeleteEmailListById(int id)
@@ -101,6 +87,11 @@ namespace CRM.WebApi.Infrastructure
                     throw new Exception();
                 }
             }
+        }
+
+        public async Task<bool> EmailListExists(int id)
+        {
+            return await db.EmailLists.CountAsync(e => e.EmailListID == id) > 0;
         }
     }
 }

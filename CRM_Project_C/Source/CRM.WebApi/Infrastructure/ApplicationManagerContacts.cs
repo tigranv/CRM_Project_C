@@ -1,18 +1,10 @@
 ﻿using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
-using LinqToExcel;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {

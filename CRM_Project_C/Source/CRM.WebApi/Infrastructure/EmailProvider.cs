@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
 using CRM.EntityFrameWorkLib;
 using System.Net.Mail;
 using System.Net;
@@ -11,9 +8,9 @@ using System.Net.Security;
 
 namespace CRM.WebApi.Infrastructure
 {
-    public class EmailProvider
+    public static class EmailProvider
     {
-        public void SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
+        public static void SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
             MailMessage mail = new MailMessage();
             SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");

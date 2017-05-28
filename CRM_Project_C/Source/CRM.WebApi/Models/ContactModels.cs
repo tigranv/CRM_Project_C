@@ -1,8 +1,5 @@
-﻿using CRM.EntityFrameWorkLib;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace CRM.WebApi.Models
 {
@@ -21,5 +18,16 @@ namespace CRM.WebApi.Models
         public Guid GuID { get; set; }
         public DateTime? DateInserted { get; set; }
         public  Dictionary<int, string> EmailLists { get; set; }
+    }
+
+    public class ViewContactSimple
+    {
+        public string FullName { get; set; }
+        public string CompanyName { get; set; }
+        public string Position { get; set; }
+        public string Country { get; set; }
+        public string Email { get; set; }
+        public Guid GuID { get; set; }
+        public DateTime? DateInserted { get; set; }
     }
 }

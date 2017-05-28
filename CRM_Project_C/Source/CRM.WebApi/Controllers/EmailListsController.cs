@@ -1,150 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
-using System.Windows;
 using CRM.WebApi.Infrastructure;
+using System.Threading.Tasks;
 
 namespace CRM.WebApi.Controllers
 {
     public class EmailListsController : ApiController
     {
-        private CRMDataBaseModel db = new CRMDataBaseModel();
-        
+        private ApplicationManager appManager = new ApplicationManager();
         // GET: api/EmailLists
-        public List<ViewEmailList> GetEmailLists()
+        public async Task<IHttpActionResult> GetAllEmailLists()
         {
-            db.Configuration.LazyLoadingEnabled = false;
-            List<EmailList> DbEmailList = db.EmailLists.ToListAsync().Result;
-            List<ViewEmailList> MyemailList = ModelFactory.EmailListToViewEmailListList(DbEmailList);
-
-            return MyemailList;
+            try
+            {
+                List<ViewEmailListSimple> allEmaillists = ModelFactory.EmailListListToViewEmailListSimpleList(await appManager.GetAllEmaillists());
+                if (allEmaillists == null) return NotFound();
+                return Ok(allEmaillists);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }
         }
 
-        // GET: api/EmailLists/5
-        [ResponseType(typeof(ViewEmailList))]
-        public IHttpActionResult GetEmailList(int id)
+        // GET: api/EmailLists
+        public async Task<IHttpActionResult> GetEmailListById(int? id)
         {
-            EmailList emailList = db.EmailLists.Find(id);
-            if (emailList == null)
+            if (!id.HasValue) return BadRequest("No parameter");
+            try
             {
-                return NotFound();
+                EmailList emaillist = await appManager.GetEmailListById(id.Value);
+                if (emaillist == null) return NotFound();
+                return Ok(ModelFactory.EmailListToViewEmailList(emaillist));
             }
-
-            return Ok(ModelFactory.EmailListToViewEmailList(emailList));
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }
         }
 
-        // PUT: api/EmailLists/5
-        [ResponseType(typeof(void))]
-        public IHttpActionResult PutEmailList([FromBody] ViewEmailList emailList)
+        // PUT: api/EmailLists
+        public async Task<IHttpActionResult> PutEmailList([FromBody] ViewEmailList emailList)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            EmailList dbEmailListToUpdate = db.EmailLists.FirstOrDefault(t => t.EmailListID == emailList.EmailListID);
-            if (dbEmailListToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            dbEmailListToUpdate.EmailListName = emailList.EmailListName;
-     
-            ICollection<Contact> UpdatedContacts = new List<Contact>();
-            foreach(var item in emailList.Contacts)
-            {
-                UpdatedContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.GuID));
-            }
-
-            dbEmailListToUpdate.Contacts.Clear();
-            dbEmailListToUpdate.Contacts = UpdatedContacts;
-
-
-            db.Entry(dbEmailListToUpdate).State = EntityState.Modified;
+            EmailList emailListToUpdate = await appManager.GetEmailListById(emailList.EmailListID);
+            if(emailListToUpdate == null) return NotFound();
 
             try
             {
-                db.SaveChanges();
+                EmailList updatedEmailList = await appManager.AddOrUpdateEmailList(emailListToUpdate, emailList, true);
+                if (updatedEmailList != null) return StatusCode(HttpStatusCode.NoContent);
+                return BadRequest();
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!EmailListExists(emailList.EmailListID))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return InternalServerError();
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         // POST: api/EmailLists
-        [ResponseType(typeof(EmailList))]
-        public IHttpActionResult PostEmailList([FromBody] ViewEmailList emailList)
+        public async Task<IHttpActionResult> PostEmailList([FromBody] ViewEmailList emailList)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            EmailList emaillistToAdd = new EmailList();
+
+            try
             {
-                return BadRequest(ModelState);
+                EmailList addedEmailList = await appManager.AddOrUpdateEmailList(emaillistToAdd, emailList, false);
+                if (addedEmailList != null) return Created("Emaillists", ModelFactory.EmailListToViewEmailList(addedEmailList));
+                return BadRequest("Duplicate emaillist Error");
             }
-
-            ICollection<Contact> AddeddContacts = new List<Contact>();
-            foreach (var item in emailList.Contacts)
+            catch (Exception)
             {
-                AddeddContacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == item.GuID));
+                return InternalServerError();
             }
-
-            EmailList NewEmailList = new EmailList()
-            {
-                EmailListName = emailList.EmailListName,
-                Contacts = AddeddContacts
-            };
-
-            db.EmailLists.Add(NewEmailList);
-            db.SaveChanges();
-
-            return CreatedAtRoute("DefaultApi", new { id = emailList.EmailListID }, emailList);
         }
 
-        // DELETE: api/EmailLists/5
-        [ResponseType(typeof(EmailList))]
-        public IHttpActionResult DeleteEmailList(int id)
+        // DELETE: api/EmailLists
+        public async Task<IHttpActionResult> DeleteEmailList(int id)
         {
-            EmailList emailList = db.EmailLists.Find(id);
-            if (emailList == null)
+            try
             {
-                return NotFound();
+                if (!(await appManager.DeleteEmailListById(id))) return BadRequest();
+                return Ok();
             }
-
-            db.EmailLists.Remove(emailList);
-            db.SaveChanges();
-
-            return Ok(emailList);
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                appManager.Dispose();
             }
             base.Dispose(disposing);
-        }
-
-        private bool EmailListExists(int id)
-        {
-            return db.EmailLists.Count(e => e.EmailListID == id) > 0;
         }
     }
 }
