@@ -61,6 +61,7 @@ namespace CRM.WebApi.Infrastructure
                 try
                 {
                     await db.SaveChangesAsync();
+                    transaction.Commit();
                     return contactToAddOrUpdate;
                 }
                 catch (Exception)
@@ -124,6 +125,7 @@ namespace CRM.WebApi.Infrastructure
                 {
                     db.Contacts.Remove(contact);
                     await db.SaveChangesAsync();
+                    transaction.Commit();
                     return true;
                 }
                 catch (Exception)

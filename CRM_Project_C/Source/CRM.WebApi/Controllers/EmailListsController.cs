@@ -67,6 +67,7 @@ namespace CRM.WebApi.Controllers
         public async Task<IHttpActionResult> PostEmailList([FromBody] ViewEmailList emailList)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (emailList.EmailListName == null) return BadRequest("No Name");
             EmailList emaillistToAdd = new EmailList();
 
             try

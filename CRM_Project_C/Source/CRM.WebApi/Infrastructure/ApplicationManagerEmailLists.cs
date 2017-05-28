@@ -3,6 +3,7 @@ using CRM.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -52,6 +53,7 @@ namespace CRM.WebApi.Infrastructure
                 try
                 {
                     await db.SaveChangesAsync();
+                    transaction.Commit();
                     return emailListToAddOrUpdate;
                 }
                 catch (Exception)
@@ -79,6 +81,7 @@ namespace CRM.WebApi.Infrastructure
                 {
                     db.EmailLists.Remove(emailList);
                     await db.SaveChangesAsync();
+                    transaction.Commit();
                     return true;
                 }
                 catch (Exception)
