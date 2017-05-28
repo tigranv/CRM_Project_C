@@ -23,29 +23,37 @@ namespace CRM.WebApi.Infrastructure
         }
 
         // update(flag = true) emaillist in db, or create(flag = false) new emaillist based on requestemaillist
-        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, ViewEmailList requestEmailList, bool flag)
+        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, ViewEmailListRequest requestEmailList, bool flag)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
                 emailListToAddOrUpdate.EmailListName = requestEmailList.EmailListName;
 
+                //emailListToAddOrUpdate.Contacts.Clear();
+                //foreach (Guid guid in requestEmailList.ContactsGuids)
+                //{
+                //    emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == guid));
+                //}
+
+                //db.EmailLists.AddOrUpdate(emailListToAddOrUpdate);
+
                 if (flag)
                 {
-                    if (requestEmailList.Contacts.Count > 0)
+                    if (requestEmailList.ContactsGuids.Count > 0)
                     {
                         emailListToAddOrUpdate.Contacts.Clear();
-                        foreach (var contact in requestEmailList.Contacts)
+                        foreach (Guid guid in requestEmailList.ContactsGuids)
                         {
-                            emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == contact.GuID));
+                            emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == guid));
                         }
                     }
                     db.Entry(emailListToAddOrUpdate).State = EntityState.Modified;
                 }
                 else
                 {
-                    foreach (var contact in requestEmailList.Contacts)
+                    foreach (Guid guid in requestEmailList.ContactsGuids)
                     {
-                        emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == contact.GuID));
+                        emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == guid));
                     }
                     db.EmailLists.Add(emailListToAddOrUpdate);
                 }

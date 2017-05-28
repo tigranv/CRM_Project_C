@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace CRM.WebApi.Models
 {
@@ -12,6 +13,17 @@ namespace CRM.WebApi.Models
         public int EmailListID { get; set; }
         public string EmailListName { get; set; }
         public List<ViewContactSimple> Contacts { get; set; }
+    }
+
+    public class ViewEmailListRequest
+    {
+        public ViewEmailListRequest()
+        {
+            ContactsGuids = new List<Guid>();
+        }
+        public int EmailListID { get; set; }
+        public string EmailListName { get; set; }
+        public List<Guid> ContactsGuids { get; set; }
     }
 
     public class ViewEmailListSimple

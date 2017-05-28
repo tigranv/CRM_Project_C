@@ -44,7 +44,7 @@ namespace CRM.WebApi.Controllers
         }
 
         // PUT: api/EmailLists
-        public async Task<IHttpActionResult> PutEmailList([FromBody] ViewEmailList emailList)
+        public async Task<IHttpActionResult> PutEmailList([FromBody] ViewEmailListRequest emailList)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -64,7 +64,7 @@ namespace CRM.WebApi.Controllers
         }
 
         // POST: api/EmailLists
-        public async Task<IHttpActionResult> PostEmailList([FromBody] ViewEmailList emailList)
+        public async Task<IHttpActionResult> PostEmailList([FromBody] ViewEmailListRequest emailList)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (emailList.EmailListName == null) return BadRequest("No Name");
