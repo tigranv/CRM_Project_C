@@ -20,79 +20,68 @@ namespace CRM.WebApi.Infrastructure
     {
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
+        public async Task<Contact> GetContactByGuId(Guid guid)
+        {
+            return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+        }
+
         public async Task<List<Contact>> GetAllContacts()
         {
             db.Configuration.LazyLoadingEnabled = false;
             return await db.Contacts.ToListAsync();
         }
 
-        public async Task<bool> UpdateContact(ViewContact contact)
+        // update(flag = true) contact in db, or create(flag = false) new contact based on requestcontact
+        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, ViewContact requestContact, bool flag)
         {
-            Contact dbContactToUpdate = await GetContactByGuId(contact.GuID);
+            contactToAddOrUpdate.FullName = requestContact.FullName;
+            contactToAddOrUpdate.Country = requestContact.Country;
+            contactToAddOrUpdate.CompanyName = requestContact.CompanyName;
+            contactToAddOrUpdate.Email = requestContact.Email;
+            contactToAddOrUpdate.Position = requestContact.Position;
 
-            if (dbContactToUpdate == null) return false;
-
-            dbContactToUpdate.FullName = contact.FullName;
-            dbContactToUpdate.Country = contact.Country;
-            dbContactToUpdate.CompanyName = contact.CompanyName;
-            dbContactToUpdate.Email = contact.Email;
-
-            if(contact.EmailLists == null) { }
-
-            db.Entry(dbContactToUpdate).State = EntityState.Modified;
+            if (flag)
+            {
+                if (requestContact.EmailLists.Count > 0)
+                {
+                    contactToAddOrUpdate.EmailLists.Clear();
+                    foreach (var emaillist in requestContact.EmailLists)
+                    {
+                        contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
+                    }
+                }
+                db.Entry(contactToAddOrUpdate).State = EntityState.Modified;
+            }
+            else
+            {
+                contactToAddOrUpdate.GuID = Guid.NewGuid();
+                contactToAddOrUpdate.DateInserted = DateTime.Now;
+                   
+                foreach (var emaillist in requestContact.EmailLists)
+                {
+                    contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
+                }
+                db.Contacts.Add(contactToAddOrUpdate);
+            }
 
             try
             {
                 await db.SaveChangesAsync();
-                return true;
+                return contactToAddOrUpdate;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
                 // need to add transaction rollback
-                if (!(await ContactExists(contact.GuID)))
+                if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate)))
                 {
-                    return false;
-                }
-                else
-                {
-                    throw ;
-                }
-            }
-        }
-
-        public async Task<bool> CreateContact(ViewContact contact)
-        {
-            if (contact.EmailLists == null) { }
-            Contact dbCont = new Contact()
-            {
-                FullName = contact.FullName,
-                Position = contact.Position,
-                Email = contact.Email,
-                Country = contact.Country,
-                CompanyName = contact.CompanyName,
-                DateInserted = DateTime.Now,
-                GuID = Guid.NewGuid()
-            };
-
-            db.Contacts.Add(dbCont);
-            try
-            {
-                await db.SaveChangesAsync();
-                return true;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                // need to add transaction rollback
-                if (!(await ContactExists(contact.GuID)))
-                {
-                    return false;
+                    return null;
                 }
                 else
                 {
                     throw;
                 }
             }
-        }  
+        } 
 
         public async Task<List<Contact>> GetContactsByGuIdList(List<Guid> GuIdList)
         {
@@ -105,14 +94,14 @@ namespace CRM.WebApi.Infrastructure
             return ContactsList;
         }
 
-        public async Task<Contact> GetContactByGuId(Guid guid)
-        {
-            return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
-        }
-
         public async Task<bool> ContactExists(Guid id)
         {
             return await db.Contacts.CountAsync(e => e.GuID == id) > 0;
+        }
+
+        public async Task<bool> EmailExists(Contact contact)
+        {
+            return await db.Contacts.CountAsync(e => e.Email == contact.Email) > 0;
         }
 
         public async Task<int> GetPagies(int perPage)
@@ -130,9 +119,9 @@ namespace CRM.WebApi.Infrastructure
             return dbContacts;
         }
 
-        public async Task<bool> DeleteCon(Guid id)
+        public async Task<bool> DeleteContactByGuid(Guid guid)
         {
-            var contact = await GetContactByGuId(id);
+            var contact = await GetContactByGuId(guid);
             if (contact == null) return false;
 
             db.Contacts.Remove(contact);

@@ -41,13 +41,13 @@ namespace CRM.WebApi.Controllers
             }    
         }
 
-        // GET: api/Contacts/Guid
-        [ResponseType(typeof(ViewContact))]
-        public async Task<IHttpActionResult> GetContactById(Guid guid)
+        // GET: api/Contacts
+        public async Task<IHttpActionResult> GetContactById(Guid? guid)
         {
+            if (!guid.HasValue) return BadRequest("No parameter");
             try
             {
-                Contact contact = await appManager.GetContactByGuId(guid);
+                Contact contact = await appManager.GetContactByGuId(guid.Value);
                 if (contact == null) return NotFound();
                 return Ok(ModelFactory.ContactToViewContact(contact));
             }
@@ -57,29 +57,45 @@ namespace CRM.WebApi.Controllers
             }     
         }
 
-        // PUT: api/Contacts (ResponseContact model from body)
-        [ResponseType(typeof(void))]
+        // PUT: api/Contacts
         public async Task<IHttpActionResult> PutContact([FromBody]ViewContact contact)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (contact.Email == null || contact.FullName == null) return BadRequest("No contact name or Email");
+
+            Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID);
+            if (contactToUpdate == null) return NotFound();
+
+            try
             {
-                return BadRequest(ModelState);
+                Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, true);
+                if (updatedcontact != null) return StatusCode(HttpStatusCode.NoContent);
+                return BadRequest("Duplicate email or Deleted Contact");
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
             }
 
-            if(await appManager.UpdateContact(contact)) return StatusCode(HttpStatusCode.NoContent);
-
-            return NotFound();
         }
 
-        // POST: api/Contacts (ResponseContact model from body)
-        [ResponseType(typeof(ViewContact))]
+        // POST: api/Contacts
         public async Task<IHttpActionResult> PostContact([FromBody]ViewContact contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (contact.Email == null || contact.FullName == null) return BadRequest("No contact name or Email");
+            Contact contactToAdd = new Contact();
 
-            if (await appManager.CreateContact(contact)) return Created("Contacts", contact);
-
-            return InternalServerError();
+            try
+            {
+                Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, false);
+                if (addedcontact != null) return Created("Contacts", ModelFactory.ContactToViewContact(addedcontact));
+                return BadRequest("Duplicate email Error");
+            }
+            catch (Exception)
+            {
+                return InternalServerError();
+            }  
         }
 
         [Route("api/Contacts/upload")]
@@ -88,24 +104,22 @@ namespace CRM.WebApi.Controllers
             return Ok();
         }
 
-        // DELETE: api/Contacts/5
-        [ResponseType(typeof(ViewContact))]
-        public async Task<IHttpActionResult> DeleteContact(Guid id)
+        // DELETE: api/Contacts
+        public async Task<IHttpActionResult> DeleteContact(Guid guid)
         {
-            if(!(await appManager.DeleteCon(id))) return BadRequest();
+            if(!(await appManager.DeleteContactByGuid(guid))) return BadRequest();
 
             return Ok();
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
-        [ResponseType(typeof(ViewContact))]
         public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
         {
 
             return Ok(ModelFactory.ContactListToViewContactList(await appManager.GetContactsByPage(start, rows, ord)));
         }
 
-        // GET: api/Contacts/pages/5
+        // GET: api/Contacts/pages
         [Route("api/Contacts/pages")]
         public async Task<int> GetNumberOfPagies(int perPage)
         {

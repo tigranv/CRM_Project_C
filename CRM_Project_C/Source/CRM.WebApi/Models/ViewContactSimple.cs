@@ -8,12 +8,6 @@ namespace CRM.WebApi.Models
 {
     public class ViewContactSimple
     {
-        public ViewContactSimple()
-        {
-            GuID = Guid.NewGuid();
-            DateInserted = DateTime.Now;
-        }
-
         public string FullName { get; set; }
         public string CompanyName { get; set; }
         public string Position { get; set; }
