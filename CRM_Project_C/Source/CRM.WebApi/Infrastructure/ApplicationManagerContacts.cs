@@ -16,7 +16,7 @@ using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {
-    public class ApplicationManager: IDisposable
+    public partial class ApplicationManager: IDisposable
     {
         private CRMDataBaseModel db = new CRMDataBaseModel();
 
@@ -34,53 +34,56 @@ namespace CRM.WebApi.Infrastructure
         // update(flag = true) contact in db, or create(flag = false) new contact based on requestcontact
         public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, ViewContact requestContact, bool flag)
         {
-            contactToAddOrUpdate.FullName = requestContact.FullName;
-            contactToAddOrUpdate.Country = requestContact.Country;
-            contactToAddOrUpdate.CompanyName = requestContact.CompanyName;
-            contactToAddOrUpdate.Email = requestContact.Email;
-            contactToAddOrUpdate.Position = requestContact.Position;
-
-            if (flag)
+            using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
-                if (requestContact.EmailLists.Count > 0)
+                contactToAddOrUpdate.FullName = requestContact.FullName;
+                contactToAddOrUpdate.Country = requestContact.Country;
+                contactToAddOrUpdate.CompanyName = requestContact.CompanyName;
+                contactToAddOrUpdate.Email = requestContact.Email;
+                contactToAddOrUpdate.Position = requestContact.Position;
+
+                if (flag)
                 {
-                    contactToAddOrUpdate.EmailLists.Clear();
+                    if (requestContact.EmailLists.Count > 0)
+                    {
+                        contactToAddOrUpdate.EmailLists.Clear();
+                        foreach (var emaillist in requestContact.EmailLists)
+                        {
+                            contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
+                        }
+                    }
+                    db.Entry(contactToAddOrUpdate).State = EntityState.Modified;
+                }
+                else
+                {
+                    contactToAddOrUpdate.GuID = Guid.NewGuid();
+                    contactToAddOrUpdate.DateInserted = DateTime.Now;
+
                     foreach (var emaillist in requestContact.EmailLists)
                     {
                         contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
                     }
+                    db.Contacts.Add(contactToAddOrUpdate);
                 }
-                db.Entry(contactToAddOrUpdate).State = EntityState.Modified;
-            }
-            else
-            {
-                contactToAddOrUpdate.GuID = Guid.NewGuid();
-                contactToAddOrUpdate.DateInserted = DateTime.Now;
-                   
-                foreach (var emaillist in requestContact.EmailLists)
-                {
-                    contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
-                }
-                db.Contacts.Add(contactToAddOrUpdate);
-            }
 
-            try
-            {
-                await db.SaveChangesAsync();
-                return contactToAddOrUpdate;
-            }
-            catch (Exception)
-            {
-                // need to add transaction rollback
-                if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate)))
+                try
                 {
-                    return null;
+                    await db.SaveChangesAsync();
+                    return contactToAddOrUpdate;
                 }
-                else
+                catch (Exception)
                 {
-                    throw;
+                    transaction.Rollback();
+                    if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate)))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-            }
+            }     
         } 
 
         public async Task<List<Contact>> GetContactsByGuIdList(List<Guid> GuIdList)
@@ -123,11 +126,40 @@ namespace CRM.WebApi.Infrastructure
         {
             var contact = await GetContactByGuId(guid);
             if (contact == null) return false;
+            using (DbContextTransaction transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    db.Contacts.Remove(contact);
+                    await db.SaveChangesAsync();
+                    return true;
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw new Exception();
+                }    
+            }
+        }
 
-            db.Contacts.Remove(contact);
-            db.SaveChanges();
-
-            return true;
+        public async Task<bool> AddToDatabaseFromBytes(byte[] bytesArray)
+        {
+            using (DbContextTransaction transaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    List<Contact> contacts = ParsingProvider.GetContactsFromFile(bytesArray);
+                    db.Contacts.AddRange(contacts);
+                    await db.SaveChangesAsync();
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw new Exception(ex.Message);
+                }
+            }
         }
 
         public void Dispose()

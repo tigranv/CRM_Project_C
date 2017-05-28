@@ -152,7 +152,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\ApplicationManager.cs" />
+    <Compile Include="Infrastructure\ApplicationManagerContacts.cs" />
+    <Compile Include="Infrastructure\ApplicationManagerEmailLists.cs" />
     <Compile Include="Infrastructure\EmailProvider.cs" />
     <Compile Include="Infrastructure\ModelFactory.cs" />
     <Compile Include="Infrastructure\ParsingProvider.cs" />

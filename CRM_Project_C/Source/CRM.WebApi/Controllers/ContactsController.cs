@@ -99,17 +99,32 @@ namespace CRM.WebApi.Controllers
         }
 
         [Route("api/Contacts/upload")]
-        public IHttpActionResult PostUploadFiles([FromBody]byte[] file)
+        public async Task<IHttpActionResult> PostUploadFiles([FromBody]byte[] file)
         {
-            return Ok();
+            try
+            {
+                if (await appManager.AddToDatabaseFromBytes(file)) return Ok();
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // DELETE: api/Contacts
         public async Task<IHttpActionResult> DeleteContact(Guid guid)
         {
-            if(!(await appManager.DeleteContactByGuid(guid))) return BadRequest();
+            try
+            {
+                if (!(await appManager.DeleteContactByGuid(guid))) return BadRequest();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException.Message);
+            }
 
-            return Ok();
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
