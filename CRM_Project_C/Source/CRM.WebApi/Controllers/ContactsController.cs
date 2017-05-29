@@ -48,18 +48,18 @@ namespace CRM.WebApi.Controllers
         }
 
         // PUT: api/Contacts
-        public async Task<IHttpActionResult> PutContact([FromBody]ViewContact contact)
+        public async Task<IHttpActionResult> PutContact([FromBody]ViewContactRequest contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (contact.Email == null || contact.FullName == null) return BadRequest("No contact name or Email");
+            if (contact.Email == null || contact.FullName == null || contact.GuID == Guid.Empty) return BadRequest("No contact name or Email or guid");
 
             Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID);
             if (contactToUpdate == null) return NotFound();
 
             try
             {
-                Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, true);
-                if (updatedcontact != null) return StatusCode(HttpStatusCode.NoContent);
+                Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, false);
+                if (updatedcontact != null) return Ok(ModelFactory.ContactToViewContact(updatedcontact));
                 return BadRequest("Duplicate email or Deleted Contact");
             }
             catch (Exception)
@@ -69,7 +69,7 @@ namespace CRM.WebApi.Controllers
         }
 
         // POST: api/Contacts
-        public async Task<IHttpActionResult> PostContact([FromBody]ViewContact contact)
+        public async Task<IHttpActionResult> PostContact([FromBody]ViewContactRequest contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             if (contact.Email == null || contact.FullName == null) return BadRequest("No contact name or Email");
@@ -77,7 +77,7 @@ namespace CRM.WebApi.Controllers
 
             try
             {
-                Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, false);
+                Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, true);
                 if (addedcontact != null) return Created("Contacts", ModelFactory.ContactToViewContact(addedcontact));
                 return BadRequest("Duplicate email Error");
             }
@@ -107,6 +107,19 @@ namespace CRM.WebApi.Controllers
             try
             {
                 if (!(await appManager.DeleteContactByGuid(guid))) return BadRequest();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.InnerException.Message);
+            }
+        }
+
+        public async Task<IHttpActionResult> DeleteContact([FromBody] List<Guid> guidlist)
+        {
+            try
+            {
+                if (!(await appManager.DeleteContactByGuid(guidlist))) return BadRequest();
                 return Ok();
             }
             catch (Exception ex)

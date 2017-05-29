@@ -53,8 +53,8 @@ namespace CRM.WebApi.Controllers
 
             try
             {
-                EmailList updatedEmailList = await appManager.AddOrUpdateEmailList(emailListToUpdate, emailList, true);
-                if (updatedEmailList != null) return StatusCode(HttpStatusCode.NoContent);
+                EmailList updatedEmailList = await appManager.AddOrUpdateEmailList(emailListToUpdate, emailList);
+                if (updatedEmailList != null) return Ok(ModelFactory.EmailListToViewEmailList(updatedEmailList));
                 return BadRequest();
             }
             catch (Exception)
@@ -72,7 +72,7 @@ namespace CRM.WebApi.Controllers
 
             try
             {
-                EmailList addedEmailList = await appManager.AddOrUpdateEmailList(emaillistToAdd, emailList, false);
+                EmailList addedEmailList = await appManager.AddOrUpdateEmailList(emaillistToAdd, emailList);
                 if (addedEmailList != null) return Created("Emaillists", ModelFactory.EmailListToViewEmailList(addedEmailList));
                 return BadRequest("Duplicate emaillist Error");
             }

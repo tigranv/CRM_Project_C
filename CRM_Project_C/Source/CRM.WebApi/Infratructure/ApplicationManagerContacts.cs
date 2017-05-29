@@ -3,6 +3,7 @@ using CRM.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace CRM.WebApi.Infrastructure
 
         public async Task<Contact> GetContactByGuId(Guid guid)
         {
+            //db.Configuration.LazyLoadingEnabled = false;
             return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
         }
 
@@ -24,7 +26,7 @@ namespace CRM.WebApi.Infrastructure
         }
 
         // update(flag = true) contact in db, or create(flag = false) new contact based on requestcontact
-        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, ViewContact requestContact, bool flag)
+        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, ViewContactRequest requestContact, bool flag)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
@@ -34,32 +36,28 @@ namespace CRM.WebApi.Infrastructure
                 contactToAddOrUpdate.Email = requestContact.Email;
                 contactToAddOrUpdate.Position = requestContact.Position;
 
-                if (flag)
+                if (requestContact.EmailLists != null)
                 {
-                    if (requestContact.EmailLists.Count > 0)
+                    contactToAddOrUpdate.EmailLists.Clear();
+                    foreach (var emaillistId in requestContact.EmailLists)
                     {
-                        contactToAddOrUpdate.EmailLists.Clear();
-                        foreach (var emaillist in requestContact.EmailLists)
-                        {
-                            contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
-                        }
+                        contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillistId));
                     }
-                    db.Entry(contactToAddOrUpdate).State = EntityState.Modified;
                 }
-                else
+
+                if (flag)
                 {
                     contactToAddOrUpdate.GuID = Guid.NewGuid();
                     contactToAddOrUpdate.DateInserted = DateTime.Now;
-
-                    foreach (var emaillist in requestContact.EmailLists)
-                    {
-                        contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillist.Key));
-                    }
-                    db.Contacts.Add(contactToAddOrUpdate);
+                }
+                else
+                {
+                    // Date to updated 
                 }
 
                 try
                 {
+                    db.Contacts.AddOrUpdate(contactToAddOrUpdate);
                     await db.SaveChangesAsync();
                     transaction.Commit();
                     return contactToAddOrUpdate;
@@ -67,14 +65,8 @@ namespace CRM.WebApi.Infrastructure
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate)))
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate))) return null;
+                    else throw;
                 }
             }     
         } 
@@ -131,9 +123,18 @@ namespace CRM.WebApi.Infrastructure
                 catch (Exception)
                 {
                     transaction.Rollback();
-                    throw new Exception();
+                    throw;
                 }    
             }
+        }
+
+        public async Task<bool> DeleteContactByGuid(List<Guid> guidlist)
+        {
+            foreach (var item in guidlist)
+            {
+                await DeleteContactByGuid(item);
+            }
+            return true;
         }
 
         public async Task<bool> AddToDatabaseFromBytes(byte[] bytesArray)

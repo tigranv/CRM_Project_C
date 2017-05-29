@@ -18,8 +18,10 @@ namespace CRM.WebApi.Infrastructure
 
         public static void SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
         {
-            string path = @"C:\Users\Tigran PC\Desktop\Templates\NewYear.html";
+            string path = System.Web.HttpContext.Current?.Request.MapPath("~//Templates//NewYear.html");
+
             string templateContext = File.ReadAllText(path);
+            //string templateContext = "Test mail from Bet-C";
 
 
             foreach (var contact in ContactsToSend)
