@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Newtonsoft.Json;
 namespace CRM.WebApi.Models
 {
     public class ViewContact
@@ -16,7 +16,6 @@ namespace CRM.WebApi.Models
         public string Country { get; set; }
         public string Email { get; set; }
         public Guid GuID { get; set; }
-        public DateTime? DateInserted { get; set; }
         public  Dictionary<int, string> EmailLists { get; set; }
     }
 
@@ -33,17 +32,18 @@ namespace CRM.WebApi.Models
         public string Country { get; set; }
         public string Email { get; set; }
         public Guid GuID { get; set; }
-        public DateTime? DateInserted { get; set; }
         public List<int> EmailLists { get; set; }
     }
+    [JsonObject]
     public class ViewContactSimple
     {
+        [JsonProperty("Full Name")]
         public string FullName { get; set; }
+        [JsonProperty("Company Name")]
         public string CompanyName { get; set; }
         public string Position { get; set; }
         public string Country { get; set; }
         public string Email { get; set; }
         public Guid GuID { get; set; }
-        public DateTime? DateInserted { get; set; }
     }
 }

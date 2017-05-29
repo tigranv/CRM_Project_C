@@ -17,7 +17,6 @@ namespace CRM.WebApi.Infrastructure
                 Country = contact.Country,
                 CompanyName = contact.CompanyName,
                 GuID = contact.GuID,
-                DateInserted = contact.DateInserted,
             };
 
             foreach (var item in contact.EmailLists)
@@ -37,7 +36,6 @@ namespace CRM.WebApi.Infrastructure
                 Country = contact.Country,
                 CompanyName = contact.CompanyName,
                 GuID = contact.GuID,
-                DateInserted = contact.DateInserted,
             };
     
             return viewContact;
