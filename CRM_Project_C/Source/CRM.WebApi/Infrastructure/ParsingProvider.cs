@@ -4,16 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {
-    public class ParsingProvider
+    public static class ParsingProvider
     {
-        public List<Contact> GetContactsFromFile(byte[] baytarray)
+        public static List<Contact> GetContactsFromFile(byte[] baytarray)
         {
-            string path = @"C:\Users\Lusine\Desktop\TestExcel.xlsx";
+            string path = @"C:\Users\Tigran PC\Desktop\TestExcelConverted.xlsx";
             List<Contact> contacts = new List<Contact>();
             Contact contact = new Contact();
 
@@ -65,7 +63,7 @@ namespace CRM.WebApi.Infrastructure
             return contacts;
         }
 
-        public static Contact FromCsv(string csvLine)
+        private static Contact FromCsv(string csvLine)
         {
             string[] values = csvLine.Split(',');
             Contact contactValues = new Contact();

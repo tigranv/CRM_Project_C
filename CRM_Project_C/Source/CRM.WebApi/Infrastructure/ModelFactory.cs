@@ -1,9 +1,7 @@
 ﻿using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {
@@ -19,6 +17,7 @@ namespace CRM.WebApi.Infrastructure
                 Country = contact.Country,
                 CompanyName = contact.CompanyName,
                 GuID = contact.GuID,
+                DateInserted = contact.DateInserted,
             };
 
             foreach (var item in contact.EmailLists)
@@ -78,7 +77,6 @@ namespace CRM.WebApi.Infrastructure
 
             return viewEmailList;
         }
-
         public static ViewEmailListSimple EmailListToViewEmailListSimple(EmailList emaillist)
         {
             ViewEmailListSimple viewEmailList = new ViewEmailListSimple()
@@ -89,8 +87,7 @@ namespace CRM.WebApi.Infrastructure
             
             return viewEmailList;
         }
-
-        public static List<ViewEmailList> EmailListToViewEmailListList(List<EmailList> emaillists)
+        public static List<ViewEmailList> EmailListListToViewEmailListList(List<EmailList> emaillists)
         {
             List<ViewEmailList> listviewEmailList = new List<ViewEmailList>();
             
@@ -101,8 +98,7 @@ namespace CRM.WebApi.Infrastructure
 
             return listviewEmailList;
         }
-
-        public static List<ViewEmailListSimple> EmailListToViewEmailListSimpleList(List<EmailList> emaillists)
+        public static List<ViewEmailListSimple> EmailListListToViewEmailListSimpleList(List<EmailList> emaillists)
         {
             List<ViewEmailListSimple> viewEmailListSimpleList = new List<ViewEmailListSimple>();
 
@@ -113,6 +109,5 @@ namespace CRM.WebApi.Infrastructure
 
             return viewEmailListSimpleList;
         }
-
     }
 }

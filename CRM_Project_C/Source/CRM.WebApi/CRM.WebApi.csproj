@@ -152,16 +152,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\ApplicationManager.cs" />
+    <Compile Include="Infrastructure\ApplicationManagerContacts.cs" />
+    <Compile Include="Infrastructure\ApplicationManagerEmailLists.cs" />
     <Compile Include="Infrastructure\EmailProvider.cs" />
     <Compile Include="Infrastructure\ModelFactory.cs" />
     <Compile Include="Infrastructure\ParsingProvider.cs" />
-    <Compile Include="Models\QueryResponseContact.cs" />
-    <Compile Include="Models\QueryRequestContact.cs" />
-    <Compile Include="Models\ViewContact.cs" />
-    <Compile Include="Models\ViewContactSimple.cs" />
-    <Compile Include="Models\ViewEmailList.cs" />
-    <Compile Include="Models\ViewEmailListSimple.cs" />
+    <Compile Include="Models\ContactModels.cs" />
+    <Compile Include="Models\EmailListModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
