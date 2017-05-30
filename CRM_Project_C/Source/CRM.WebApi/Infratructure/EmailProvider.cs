@@ -23,9 +23,19 @@ namespace CRM.WebApi.Infrastructure
         public async Task SendEmailToContacts(List<Contact> ContactsToSend, int templateId)
         {
             string filename = (await appmanager.GetTemplateById(templateId)).TemplateName;
-            string path = System.Web.HttpContext.Current?.Request.MapPath($"~//Templates//{filename}");
+            string path = string.Empty;
+            string templateContext = string.Empty;
 
-            string templateContext = File.ReadAllText(path);
+            if (filename != null)
+            {
+                path = System.Web.HttpContext.Current?.Request.MapPath($"~//Templates//{filename}");
+                templateContext = File.ReadAllText(path);
+            }
+            else
+            {
+                // TODO exception handling
+            }
+
 
             foreach (var contact in ContactsToSend)
             {

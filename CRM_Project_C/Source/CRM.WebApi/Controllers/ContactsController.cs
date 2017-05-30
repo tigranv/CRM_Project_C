@@ -102,7 +102,7 @@ namespace CRM.WebApi.Controllers
         }
 
         // DELETE: api/Contacts
-        public async Task<IHttpActionResult> DeleteContact(Guid guid)
+        public async Task<IHttpActionResult> DeleteContact([FromUri]Guid guid)
         {
             try
             {
