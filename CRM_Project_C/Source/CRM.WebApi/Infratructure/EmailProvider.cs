@@ -6,23 +6,26 @@ using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.IO;
+using System;
+using CRM.WebApi.Infratructure;
+using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
-    public static class EmailProvider
+    public class EmailProvider: IDisposable
     {
-        private static string Replace(string templateText, Contact c)
+        ApplicationManagerTemplates appmanager = new ApplicationManagerTemplates();
+        private string Replace(string templateText, Contact c)
         {
             return templateText.Replace("{FullName}", c.FullName).Replace("{CompanyName}", c.CompanyName);
         }
 
-        public static void SendEmailToContacts(List<Contact> ContactsToSend, int TamplateId)
+        public async Task SendEmailToContacts(List<Contact> ContactsToSend, int templateId)
         {
-            string path = System.Web.HttpContext.Current?.Request.MapPath("~//Templates//NewYear.html");
+            string filename = (await appmanager.GetTemplateById(templateId)).TemplateName;
+            string path = System.Web.HttpContext.Current?.Request.MapPath($"~//Templates//{filename}");
 
             string templateContext = File.ReadAllText(path);
-            //string templateContext = "Test mail from Bet-C";
-
 
             foreach (var contact in ContactsToSend)
             {
@@ -40,6 +43,11 @@ namespace CRM.WebApi.Infrastructure
 
                 SmtpServer.Send(mail);
             }
+        }
+
+        public void Dispose()
+        {
+            appmanager.Dispose();
         }
     }
 }

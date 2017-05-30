@@ -2,37 +2,52 @@
 using System.Web.Http;
 using System.Web.Http.Description;
 using CRM.EntityFrameWorkLib;
+using System.Threading.Tasks;
+using CRM.WebApi.Infratructure;
+using System.Collections.Generic;
+using System;
 
 namespace CRM.WebApi.Controllers
 {
     public class TemplatesController : ApiController
     {
-        private CRMDataBaseModel db = new CRMDataBaseModel();
-
+        private ApplicationManagerTemplates appManager = new ApplicationManagerTemplates();
         // GET: api/Templates
-        public IQueryable<Template> GetTemplates()
+        public async Task<IHttpActionResult> GetAllTemplates()
         {
-            return db.Templates;
+            try
+            {
+                List<Template> alltemplates = await appManager.GetAllTemplates();
+                if (alltemplates == null) return NotFound();
+                return Ok(alltemplates);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }
         }
 
         // GET: api/Templates
-        [ResponseType(typeof(Template))]
-        public IHttpActionResult GetTemplate(int id)
+        public async Task<IHttpActionResult> GetTemplate(int? id)
         {
-            Template template = db.Templates.Find(id);
-            if (template == null)
+            if (!id.HasValue) return BadRequest("No parameter");
+            try
             {
-                return NotFound();
+                Template templ = await appManager.GetTemplateById(id.Value);
+                if (templ == null) return NotFound();
+                return Ok(templ);
             }
-
-            return Ok(template);
+            catch (Exception ex)
+            {
+                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
+            }       
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                db.Dispose();
+                appManager.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -189,6 +189,7 @@
     <Compile Include="Controllers\TemplatesController.cs" />
     <Compile Include="Infratructure\ApplicationManagerContacts.cs" />
     <Compile Include="Infratructure\ApplicationManagerEmailLists.cs" />
+    <Compile Include="Infratructure\ApplicationManagerTemplates.cs" />
     <Compile Include="Infratructure\EmailProvider.cs" />
     <Compile Include="Infratructure\ModelFactory.cs" />
     <Compile Include="Infratructure\ParsingProvider.cs" />

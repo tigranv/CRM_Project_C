@@ -10,6 +10,7 @@ namespace CRM.WebApi.Controllers
     public class SendEmailsController : ApiController
     {
         ApplicationManager AppManager = new ApplicationManager();
+        EmailProvider emprovider = new EmailProvider();
         public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> guidlist, [FromUri] int template)
         {
             List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(guidlist);
@@ -17,14 +18,13 @@ namespace CRM.WebApi.Controllers
 
             try
             {
-                EmailProvider.SendEmailToContacts(ContactsToSend, template);
+                await emprovider.SendEmailToContacts(ContactsToSend, template);
                 return Ok();
             }
             catch (Exception ex)
             {
                 return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }
-           
+            }    
         }
 
         public IHttpActionResult PostSendEmails([FromUri] int tamplate, int emaillistId)
@@ -37,6 +37,7 @@ namespace CRM.WebApi.Controllers
             if (disposing)
             {
                 AppManager.Dispose();
+                emprovider.Dispose();
             }
             base.Dispose(disposing);
         }

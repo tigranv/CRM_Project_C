@@ -41,7 +41,8 @@ namespace CRM.WebApi.Infrastructure
                     contactToAddOrUpdate.EmailLists.Clear();
                     foreach (var emaillistId in requestContact.EmailLists)
                     {
-                        contactToAddOrUpdate.EmailLists.Add(db.EmailLists.FirstOrDefault(x => x.EmailListID == emaillistId));
+                        EmailList emlist = await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == emaillistId);
+                        if(emlist != null) contactToAddOrUpdate.EmailLists.Add(emlist);
                     }
                 }
 
@@ -52,7 +53,7 @@ namespace CRM.WebApi.Infrastructure
                 }
                 else
                 {
-                    // Date to updated 
+                    //TODO add Updated date in database and update it here every time
                 }
 
                 try

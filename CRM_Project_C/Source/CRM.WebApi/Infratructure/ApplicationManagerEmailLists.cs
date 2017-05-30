@@ -34,7 +34,8 @@ namespace CRM.WebApi.Infrastructure
                     emailListToAddOrUpdate.Contacts.Clear();
                     foreach (Guid guid in requestEmailList.Contacts)
                     {
-                        emailListToAddOrUpdate.Contacts.Add(db.Contacts.FirstOrDefault(x => x.GuID == guid));
+                        var cont = await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+                        if(cont != null) emailListToAddOrUpdate.Contacts.Add(cont);
                     }
                 }
 
