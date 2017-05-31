@@ -5,18 +5,17 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
     public partial class ApplicationManager: IDisposable
     {
-        private CRMDataBaseModel db = new CRMDataBaseModel();
-
-        public async Task<Contact> GetContactByGuId(Guid guid)
+        private CRMDataBaseModel db;
+        public ApplicationManager()
         {
-            //db.Configuration.LazyLoadingEnabled = false;
-            return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+            db = new CRMDataBaseModel();
         }
 
         public async Task<List<Contact>> GetAllContacts()
@@ -25,8 +24,13 @@ namespace CRM.WebApi.Infrastructure
             return await db.Contacts.ToListAsync();
         }
 
+        public async Task<Contact> GetContactByGuId(Guid guid)
+        {
+            return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+        }
+
         // update(flag = true) contact in db, or create(flag = false) new contact based on requestcontact
-        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, ViewContactRequest requestContact, bool flag)
+        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, RequestContact requestContact, bool flag)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
@@ -53,7 +57,7 @@ namespace CRM.WebApi.Infrastructure
                 }
                 else
                 {
-                    //TODO add Updated date in database and update it here every time
+                    contactToAddOrUpdate.Modified = DateTime.Now;
                 }
 
                 try
@@ -63,7 +67,7 @@ namespace CRM.WebApi.Infrastructure
                     transaction.Commit();
                     return contactToAddOrUpdate;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
                     if ((await ContactExists(contactToAddOrUpdate.GuID)) || (await EmailExists(contactToAddOrUpdate))) return null;
@@ -121,7 +125,7 @@ namespace CRM.WebApi.Infrastructure
                     transaction.Commit();
                     return true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
                     throw;
@@ -158,6 +162,11 @@ namespace CRM.WebApi.Infrastructure
             }
         }
 
+        public bool CheckEmail(string email)
+        {
+            return !Regex.IsMatch(email, @"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z",
+                RegexOptions.IgnoreCase);
+        }
         public void Dispose()
         {
             db.Dispose();

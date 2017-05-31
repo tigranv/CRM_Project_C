@@ -109,6 +109,10 @@
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.4.9\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
@@ -167,6 +171,12 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\PublishProfiles\crmbetc - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\crmbetc - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
@@ -178,6 +188,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Templates\BirthdayWish.html" />
+    <Content Include="Templates\HappyEaster.html" />
+    <Content Include="Templates\IndependenceDay.html" />
     <Content Include="Templates\LabourDay.html" />
     <Content Include="Templates\NewYear.html" />
     <Content Include="Web.config" />
@@ -187,11 +199,11 @@
     <Compile Include="Controllers\EmailListsController.cs" />
     <Compile Include="Controllers\SendEmailsController.cs" />
     <Compile Include="Controllers\TemplatesController.cs" />
+    <Compile Include="Filters\NotImplExceptionFilterAttribute.cs" />
     <Compile Include="Infratructure\ApplicationManagerContacts.cs" />
     <Compile Include="Infratructure\ApplicationManagerEmailLists.cs" />
-    <Compile Include="Infratructure\ApplicationManagerTemplates.cs" />
     <Compile Include="Infratructure\EmailProvider.cs" />
-    <Compile Include="Infratructure\ModelFactory.cs" />
+    <Compile Include="Infratructure\LoggerManager.cs" />
     <Compile Include="Infratructure\ParsingProvider.cs" />
     <Compile Include="Models\RequestModels.cs" />
     <Compile Include="Models\ResponseModels.cs" />

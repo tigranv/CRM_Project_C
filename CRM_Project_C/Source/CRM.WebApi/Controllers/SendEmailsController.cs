@@ -1,4 +1,5 @@
 ﻿using CRM.EntityFrameWorkLib;
+using CRM.WebApi.Filters;
 using CRM.WebApi.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Web.Http;
 
 namespace CRM.WebApi.Controllers
 {
+    [NotImplExceptionFilterAttribute]
     public class SendEmailsController : ApiController
     {
         ApplicationManager AppManager = new ApplicationManager();
@@ -15,20 +17,16 @@ namespace CRM.WebApi.Controllers
         {
             List<Contact> ContactsToSend = await AppManager.GetContactsByGuIdList(guidlist);
             if (ContactsToSend.Count == 0) return NotFound();
-
-            try
-            {
-                await emprovider.SendEmailToContacts(ContactsToSend, template);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }    
+            await emprovider.SendEmailToContacts(ContactsToSend, template);
+            return Ok();   
         }
 
-        public IHttpActionResult PostSendEmails([FromUri] int tamplate, int emaillistId)
+        public async Task<IHttpActionResult> PostSendEmailsByEmailList([FromUri] int template, [FromUri]  int emaillistId)
         {
+            List<Contact> contactsToSend = (await AppManager.GetEmailListById(emaillistId)).Contacts as List<Contact>;
+            if (contactsToSend == null || contactsToSend.Count == 0) return NotFound();
+
+            await emprovider.SendEmailToContacts(contactsToSend, template);
             return Ok();
         }
 

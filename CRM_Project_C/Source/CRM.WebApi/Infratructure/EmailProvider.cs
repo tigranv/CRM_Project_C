@@ -7,14 +7,14 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Security;
 using System.IO;
 using System;
-using CRM.WebApi.Infratructure;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
+    //TODO check try catchies
     public class EmailProvider: IDisposable
     {
-        ApplicationManagerTemplates appmanager = new ApplicationManagerTemplates();
+        ApplicationManager appmanager = new ApplicationManager();
         private string Replace(string templateText, Contact c)
         {
             return templateText.Replace("{FullName}", c.FullName).Replace("{CompanyName}", c.CompanyName);

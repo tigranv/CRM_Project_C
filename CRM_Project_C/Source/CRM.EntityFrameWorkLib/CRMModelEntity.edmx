@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="crmCModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="crmCModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Contacts">
           <Key>
             <PropertyRef Name="ContactId" />
@@ -17,6 +17,7 @@
           <Property Name="Email" Type="varchar" MaxLength="250" Nullable="false" />
           <Property Name="GuID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="DateInserted" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="Modified" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="EmailListContacts">
           <Key>
@@ -82,8 +83,7 @@
             <End Role="EmailListContacts" EntitySet="EmailListContacts" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="crmCModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -100,6 +100,7 @@
           <Property Name="GuID" Type="Guid" Nullable="false" />
           <Property Name="DateInserted" Type="DateTime" Nullable="false" Precision="7" />
           <NavigationProperty Name="EmailLists" Relationship="Self.EmailListContacts" FromRole="Contacts" ToRole="EmailLists" />
+          <Property Name="Modified" Type="DateTime" Precision="7" />
         </EntityType>
         <EntityType Name="EmailList">
           <Key>
@@ -138,6 +139,7 @@
           <EntitySetMapping Name="Contacts">
             <EntityTypeMapping TypeName="crmCModel.Contact">
               <MappingFragment StoreEntitySet="Contacts">
+                <ScalarProperty Name="Modified" ColumnName="Modified" />
                 <ScalarProperty Name="ContactId" ColumnName="ContactId" />
                 <ScalarProperty Name="FullName" ColumnName="FullName" />
                 <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />

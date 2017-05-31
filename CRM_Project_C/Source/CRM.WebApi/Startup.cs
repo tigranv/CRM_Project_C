@@ -1,12 +1,6 @@
 ﻿using Microsoft.Owin;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Owin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Formatting;
-using System.Web;
 using System.Web.Http;
 
 [assembly: OwinStartup(typeof(CRM.WebApi.Startup))]
@@ -39,12 +33,10 @@ namespace CRM.WebApi
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
-            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
-            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            // var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
+            //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 
-            config.Formatters.JsonFormatter
-                       .SerializerSettings
-                       .ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
     }
 }

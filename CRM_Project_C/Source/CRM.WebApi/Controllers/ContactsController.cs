@@ -7,11 +7,14 @@ using CRM.WebApi.Models;
 using System.Web.Routing;
 using CRM.WebApi.Infrastructure;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using CRM.WebApi.Filters;
 
 //TODO: Authentication must be added
 
 namespace CRM.WebApi.Controllers
 {
+    [NotImplExceptionFilterAttribute]
     public class ContactsController : ApiController
     {      
         ApplicationManager appManager = new ApplicationManager();
@@ -19,119 +22,77 @@ namespace CRM.WebApi.Controllers
         // GET: api/Contacts
         public async Task<IHttpActionResult> GetAllContacts()
         {
-            try
-            {
-                List<ViewContactSimple> allcontacts = ModelFactory.ContactListToViewContactSimpleList(await appManager.GetAllContacts());
-                if (allcontacts == null) return NotFound();
-                return Ok(allcontacts);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }    
+            List<Contact> allcontacts = await appManager.GetAllContacts();
+            if (allcontacts == null) return NotFound();
+            var data = new List<ViewContactSimple>();
+            allcontacts.ForEach(p => data.Add(new ViewContactSimple(p)));
+            return Ok(data);
         }
 
         // GET: api/Contacts
         public async Task<IHttpActionResult> GetContactById(Guid? guid)
         {
             if (!guid.HasValue) return BadRequest("No parameter");
-            try
-            {
-                Contact contact = await appManager.GetContactByGuId(guid.Value);
-                if (contact == null) return NotFound();
-                return Ok(ModelFactory.ContactToViewContact(contact));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }     
+            Contact contact = await appManager.GetContactByGuId(guid.Value);
+            if (contact == null) return NotFound();
+            return Ok(new ViewContact(contact));
+
+            // return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
         }
 
         // PUT: api/Contacts
-        public async Task<IHttpActionResult> PutContact([FromBody]ViewContactRequest contact)
+        public async Task<IHttpActionResult> PutContact([FromBody]RequestContact contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (contact.Email == null || contact.FullName == null || contact.GuID == Guid.Empty) return BadRequest("No contact name or Email or guid");
+            if (contact.GuID == Guid.Empty) return BadRequest("Invalid guid");
+            if (appManager.CheckEmail(contact.Email)) return BadRequest("Email address is not valid");
 
-            Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID);
+            Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID.Value);
             if (contactToUpdate == null) return NotFound();
-
-            try
-            {
-                Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, false);
-                if (updatedcontact != null) return Ok(ModelFactory.ContactToViewContact(updatedcontact));
-                return BadRequest("Duplicate email or Deleted Contact");
-            }
-            catch (Exception)
-            {
-                return InternalServerError();
-            }
+            Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, false);
+            if (updatedcontact != null) return Ok(new ViewContact(updatedcontact));
+            return BadRequest("Duplicate email or Deleted Contact");
         }
 
         // POST: api/Contacts
-        public async Task<IHttpActionResult> PostContact([FromBody]ViewContactRequest contact)
+        public async Task<IHttpActionResult> PostContact([FromBody]RequestContact contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (contact.Email == null || contact.FullName == null) return BadRequest("No contact name or Email");
-            Contact contactToAdd = new Contact();
+            if(appManager.CheckEmail(contact.Email)) return BadRequest("Email address is not valid");
 
-            try
-            {
-                Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, true);
-                if (addedcontact != null) return Created("Contacts", ModelFactory.ContactToViewContact(addedcontact));
-                return BadRequest("Duplicate email Error");
-            }
-            catch (Exception)
-            {
-                return InternalServerError();
-            }  
+            Contact contactToAdd = new Contact();
+            Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, true);
+            if (addedcontact != null) return Created("Contacts", new ViewContact(addedcontact));
+            return BadRequest("Duplicate email Error"); 
         }
 
         [Route("api/Contacts/upload")]
         public async Task<IHttpActionResult> PostUploadFiles([FromBody]byte[] file)
         {
-            try
-            {
-                if (await appManager.AddToDatabaseFromBytes(file)) return Ok();
-                return BadRequest();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            if (await appManager.AddToDatabaseFromBytes(file)) return Ok();
+            return BadRequest();
         }
 
         // DELETE: api/Contacts
         public async Task<IHttpActionResult> DeleteContact([FromUri]Guid guid)
         {
-            try
-            {
-                if (!(await appManager.DeleteContactByGuid(guid))) return BadRequest();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.InnerException.Message);
-            }
+            if (!(await appManager.DeleteContactByGuid(guid))) return NotFound();
+            return Ok();
         }
 
         public async Task<IHttpActionResult> DeleteContact([FromBody] List<Guid> guidlist)
         {
-            try
-            {
-                if (!(await appManager.DeleteContactByGuid(guidlist))) return BadRequest();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.InnerException.Message);
-            }
+            if (!(await appManager.DeleteContactByGuid(guidlist))) return NotFound();
+            return Ok();
         }
 
         // GET: api/Contacts?start=2&rows=3&ord=false
         public async Task<IHttpActionResult> GetOrderedContactsByPage(int start, int rows, bool ord)
         {
-            return Ok(ModelFactory.ContactListToViewContactList(await appManager.GetContactsByPage(start, rows, ord)));
+            List<Contact> sortedContacts = await appManager.GetContactsByPage(start, rows, ord);
+            var data = new List<ViewContactSimple>();
+            sortedContacts.ForEach(p => data.Add(new ViewContactSimple(p)));
+            return Ok(data);
         }
 
         // GET: api/Contacts/pages

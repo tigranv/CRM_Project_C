@@ -1,17 +1,15 @@
-﻿using System.Linq;
-using System.Web.Http;
-using System.Web.Http.Description;
+﻿using System.Web.Http;
 using CRM.EntityFrameWorkLib;
 using System.Threading.Tasks;
-using CRM.WebApi.Infratructure;
 using System.Collections.Generic;
 using System;
+using CRM.WebApi.Infrastructure;
 
 namespace CRM.WebApi.Controllers
 {
     public class TemplatesController : ApiController
     {
-        private ApplicationManagerTemplates appManager = new ApplicationManagerTemplates();
+        private ApplicationManager appManager = new ApplicationManager();
         // GET: api/Templates
         public async Task<IHttpActionResult> GetAllTemplates()
         {
@@ -50,7 +48,6 @@ namespace CRM.WebApi.Controllers
                 appManager.Dispose();
             }
             base.Dispose(disposing);
-        }
-        
+        }      
     }
 }

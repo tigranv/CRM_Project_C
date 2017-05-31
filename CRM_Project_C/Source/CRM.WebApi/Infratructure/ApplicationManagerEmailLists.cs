@@ -4,26 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
     public partial class ApplicationManager : IDisposable
     {
-        public async Task<EmailList> GetEmailListById(int id)
-        {
-            return await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == id);
-        }
-
         public async Task<List<EmailList>> GetAllEmaillists()
         {
             db.Configuration.LazyLoadingEnabled = false;
             return await db.EmailLists.ToListAsync();
         }
+        public async Task<EmailList> GetEmailListById(int id)
+        {
+            return await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == id);
+        }
 
         // update(flag = true) emaillist in db, or create(flag = false) new emaillist based on requestemaillist
-        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, ViewEmailListRequest requestEmailList)
+        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, RequestEmailList requestEmailList)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
@@ -35,7 +33,7 @@ namespace CRM.WebApi.Infrastructure
                     foreach (Guid guid in requestEmailList.Contacts)
                     {
                         var cont = await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
-                        if(cont != null) emailListToAddOrUpdate.Contacts.Add(cont);
+                        if (cont != null) emailListToAddOrUpdate.Contacts.Add(cont);
                     }
                 }
 
@@ -47,7 +45,7 @@ namespace CRM.WebApi.Infrastructure
                     transaction.Commit();
                     return emailListToAddOrUpdate;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
                     if ((await EmailListExists(emailListToAddOrUpdate.EmailListID)))
@@ -75,10 +73,10 @@ namespace CRM.WebApi.Infrastructure
                     transaction.Commit();
                     return true;
                 }
-                catch (Exception)
+                catch
                 {
                     transaction.Rollback();
-                    throw new Exception();
+                    throw;
                 }
             }
         }
@@ -86,6 +84,16 @@ namespace CRM.WebApi.Infrastructure
         public async Task<bool> EmailListExists(int id)
         {
             return await db.EmailLists.CountAsync(e => e.EmailListID == id) > 0;
+        }
+
+        public async Task<Template> GetTemplateById(int id)
+        {
+            return await db.Templates.FindAsync(id);
+        }
+
+        public async Task<List<Template>> GetAllTemplates()
+        {
+            return await db.Templates.ToListAsync();
         }
     }
 }
