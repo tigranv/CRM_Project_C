@@ -11,6 +11,7 @@ namespace CRM.WebApi.Models
         public ViewContact()
         {
             EmailLists = new Dictionary<int, string>();
+            //EmailLists = new List<ViewEmailListSimple>();
         }
 
         public ViewContact(Contact contact)
@@ -21,11 +22,17 @@ namespace CRM.WebApi.Models
             Country = contact.Country;
             CompanyName = contact.CompanyName;
             GuID = contact.GuID;
+            EmailLists = new Dictionary<int, string>();
 
             foreach (var item in contact.EmailLists)
             {
                 EmailLists.Add(item.EmailListID, item.EmailListName);
             }
+
+            //foreach (var item in contact.EmailLists)
+            //{
+            //    EmailLists.Add(new ViewEmailListSimple(item));
+            //}
         }
 
         [JsonProperty("Full Name")]
@@ -37,6 +44,8 @@ namespace CRM.WebApi.Models
         public string Email { get; set; }
         public Guid GuID { get; set; }
         public Dictionary<int, string> EmailLists { get; set; }
+        //public List<ViewEmailListSimple> EmailLists { get; set; }
+
     }
     [JsonObject]
     public class ViewContactSimple
@@ -77,6 +86,7 @@ namespace CRM.WebApi.Models
         {
             EmailListID = emaillist.EmailListID;
             EmailListName = emaillist.EmailListName;
+            Contacts = new List<ViewContactSimple>();
 
             foreach (var item in emaillist.Contacts)
             {

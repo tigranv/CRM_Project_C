@@ -43,11 +43,10 @@ namespace CRM.WebApi.Controllers
         // PUT: api/Contacts
         public async Task<IHttpActionResult> PutContact([FromBody]RequestContact contact)
         {
-            //if (!ModelState.IsValid) return BadRequest(ModelState);
-            //if (contact.GuID == Guid.Empty) return BadRequest("Invalid guid");
-            //if (appManager.CheckEmail(contact.Email)) return BadRequest("Email address is not valid");
-            throw new ExecutionEngineException("aaahhh");
-            // throw new NullReferenceException();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (contact.GuID == Guid.Empty) return BadRequest("Invalid guid");
+            if (appManager.CheckEmail(contact.Email)) return BadRequest("Email address is not valid");
+
             Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID.Value);
             if (contactToUpdate == null) return NotFound();
             Contact updatedcontact = await appManager.AddOrUpdateContact(contactToUpdate, contact, false);
