@@ -58,8 +58,8 @@ namespace CRM.WebApi.Filters
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.GatewayTimeout)
                 {
-                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
-                    ReasonPhrase = ""
+                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
+                    // ReasonPhrase = ""
                 };
             }
 

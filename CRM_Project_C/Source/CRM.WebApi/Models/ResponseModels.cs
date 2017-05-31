@@ -10,29 +10,22 @@ namespace CRM.WebApi.Models
     {
         public ViewContact()
         {
-            EmailLists = new Dictionary<int, string>();
-            //EmailLists = new List<ViewEmailListSimple>();
+            EmailLists = new List<ViewEmailListSimple>();
         }
-
         public ViewContact(Contact contact)
         {
             FullName = contact.FullName;
-            Position = contact.Position;
+            Position = contact.Position ?? "Not Specified";
             Email = contact.Email;
-            Country = contact.Country;
-            CompanyName = contact.CompanyName;
+            Country = contact.Country ?? "Not Specified";
+            CompanyName = contact.CompanyName ?? "Not Specified";
             GuID = contact.GuID;
-            EmailLists = new Dictionary<int, string>();
+            EmailLists = new List<ViewEmailListSimple>();
 
             foreach (var item in contact.EmailLists)
             {
-                EmailLists.Add(item.EmailListID, item.EmailListName);
+                EmailLists.Add(new ViewEmailListSimple(item));
             }
-
-            //foreach (var item in contact.EmailLists)
-            //{
-            //    EmailLists.Add(new ViewEmailListSimple(item));
-            //}
         }
 
         [JsonProperty("Full Name")]
@@ -43,10 +36,10 @@ namespace CRM.WebApi.Models
         public string Country { get; set; }
         public string Email { get; set; }
         public Guid GuID { get; set; }
-        public Dictionary<int, string> EmailLists { get; set; }
-        //public List<ViewEmailListSimple> EmailLists { get; set; }
+        public List<ViewEmailListSimple> EmailLists { get; set; }
 
     }
+
     [JsonObject]
     public class ViewContactSimple
     {
@@ -54,13 +47,12 @@ namespace CRM.WebApi.Models
         {
 
         }
-
         public ViewContactSimple(Contact contact)
         {
             FullName = contact.FullName;
-            CompanyName = contact.CompanyName;
-            Position = contact.Position;
-            Country = contact.Country;
+            CompanyName = contact.CompanyName ?? "Not Specified";
+            Position = contact.Position ?? "Not Specified";
+            Country = contact.Country ?? "Not Specified";
             Email = contact.Email;
             GuID = contact.GuID;
         }
@@ -98,6 +90,7 @@ namespace CRM.WebApi.Models
         public string EmailListName { get; set; }
         public List<ViewContactSimple> Contacts { get; set; }
     }
+
     public class ViewEmailListSimple
     {
         public ViewEmailListSimple()

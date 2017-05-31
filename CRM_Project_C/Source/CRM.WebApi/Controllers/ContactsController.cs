@@ -19,9 +19,11 @@ namespace CRM.WebApi.Controllers
     {      
         ApplicationManager appManager = new ApplicationManager();
 
-        // GET: api/Contacts
+        // GET: api/Contacts inchic klni glux chem hanum, web configi mej karoxa ban es poxel? che brat, menak meili hascen
         public async Task<IHttpActionResult> GetAllContacts()
         {
+            // senc error galisa? che ape daje postmanov azuri vra chi gali, spasi cuyc tam naturi te jogum em hly spasi es porcem anem eli, hly tenc chem are :D bayc fronts ashxatuma,
+            // hl@ qo ajaxov porci im url@ pasi tam et file qez
             List<Contact> allcontacts = await appManager.GetAllContacts();
             if (allcontacts == null) return NotFound();
             var data = new List<ViewContactSimple>();
@@ -44,7 +46,7 @@ namespace CRM.WebApi.Controllers
         public async Task<IHttpActionResult> PutContact([FromBody]RequestContact contact)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (contact.GuID == Guid.Empty) return BadRequest("Invalid guid");
+            if (contact.GuID == Guid.Empty || contact.GuID == null) return BadRequest("Invalid guid");
             if (appManager.CheckEmail(contact.Email)) return BadRequest("Email address is not valid");
 
             Contact contactToUpdate = await appManager.GetContactByGuId(contact.GuID.Value);

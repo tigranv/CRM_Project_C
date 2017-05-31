@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
 
 namespace CRM.WebApi.Models
 {

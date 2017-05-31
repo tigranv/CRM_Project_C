@@ -41,7 +41,7 @@ namespace CRM.WebApi.Infrastructure
             {
                 MailMessage mail = new MailMessage();
                 SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
-                mail.From = new MailAddress("h_lusy@yahoo.com");
+                mail.From = new MailAddress("betcharutyunyan@yahoo.com");
                 mail.To.Add(contact.Email);
                 //mail.To.Add(string.Join(",", ContactsToSend.Select(x => x.Email)));
                 mail.Subject = "Test Mail";

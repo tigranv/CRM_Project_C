@@ -1,10 +1,7 @@
 ﻿using NLog;
 using NLog.Targets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Web;
 
 namespace CRM.WebApi.Infratructure
 {
@@ -29,4 +26,6 @@ namespace CRM.WebApi.Infratructure
             Logger.Log(LogLevel.Fatal, ex, $"\nErr: {ex.Message}\nInner: {ex.InnerException?.Message}\n");
         }
     }
+
+
 }
