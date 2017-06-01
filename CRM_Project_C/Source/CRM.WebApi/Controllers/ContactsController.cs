@@ -36,8 +36,6 @@ namespace CRM.WebApi.Controllers
             Contact contact = await appManager.GetContactByGuId(guid.Value);
             if (contact == null) return NotFound();
             return Ok(new ViewContact(contact));
-
-            // return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
         }
 
         // PUT: api/Contacts

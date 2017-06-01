@@ -200,7 +200,7 @@
     <Compile Include="Controllers\EmailListsController.cs" />
     <Compile Include="Controllers\SendEmailsController.cs" />
     <Compile Include="Controllers\TemplatesController.cs" />
-    <Compile Include="Filters\NotImplExceptionFilterAttribute.cs" />
+    <Compile Include="ExceptionHandling\NotImplExceptionFilterAttribute.cs" />
     <Compile Include="Infratructure\ApplicationManagerContacts.cs" />
     <Compile Include="Infratructure\ApplicationManagerEmailLists.cs" />
     <Compile Include="Infratructure\EmailProvider.cs" />

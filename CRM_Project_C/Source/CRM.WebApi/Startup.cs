@@ -1,5 +1,4 @@
-﻿using CRM.WebApi.Filters;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
 using System.Web.Http;
