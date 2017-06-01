@@ -19,11 +19,9 @@ namespace CRM.WebApi.Controllers
     {      
         ApplicationManager appManager = new ApplicationManager();
 
-        // GET: api/Contacts inchic klni glux chem hanum, web configi mej karoxa ban es poxel? che brat, menak meili hascen
+        // GET: api/Contacts
         public async Task<IHttpActionResult> GetAllContacts()
         {
-            // senc error galisa? che ape daje postmanov azuri vra chi gali, spasi cuyc tam naturi te jogum em hly spasi es porcem anem eli, hly tenc chem are :D bayc fronts ashxatuma,
-            // hl@ qo ajaxov porci im url@ pasi tam et file qez
             List<Contact> allcontacts = await appManager.GetAllContacts();
             if (allcontacts == null) return NotFound();
             var data = new List<ViewContactSimple>();

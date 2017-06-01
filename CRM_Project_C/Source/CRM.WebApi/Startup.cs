@@ -1,4 +1,5 @@
-﻿using Microsoft.Owin;
+﻿using CRM.WebApi.Filters;
+using Microsoft.Owin;
 using Newtonsoft.Json;
 using Owin;
 using System.Web.Http;
@@ -33,6 +34,8 @@ namespace CRM.WebApi
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
+
+            //config.Filters.Add(new NotImplExceptionFilterAttribute);
             // var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
             //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
 

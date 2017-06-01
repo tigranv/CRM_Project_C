@@ -37,7 +37,6 @@ namespace CRM.WebApi.Models
         public string Email { get; set; }
         public Guid GuID { get; set; }
         public List<ViewEmailListSimple> EmailLists { get; set; }
-
     }
 
     [JsonObject]

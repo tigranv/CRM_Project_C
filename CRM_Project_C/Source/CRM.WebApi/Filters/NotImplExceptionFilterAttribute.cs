@@ -14,6 +14,7 @@ using System.Web.Http.Filters;
 
 namespace CRM.WebApi.Filters
 {
+    //TODO: exception handling need to add
     public class NotImplExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly LoggerManager log = new LoggerManager();
@@ -56,11 +57,12 @@ namespace CRM.WebApi.Filters
 
             else
             {
-                actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.GatewayTimeout)
+                actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
-                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
-                    // ReasonPhrase = ""
+                    //Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
+                    Content = new StringContent("We apologize but an error occured within the application. Please try again later.", System.Text.Encoding.UTF8, "text/plain")
                 };
+            
             }
 
             return base.OnExceptionAsync(actionExecutedContext, cancellationToken);
