@@ -6,9 +6,12 @@ using CRM.WebApi.Infrastructure;
 using System.Net.Http;
 using CRM.WebApi.Infratructure;
 using System.Net.Http.Headers;
+using System;
+using CRM.WebApi.Filters;
 
 namespace CRM.WebApi.Controllers
 {
+    [NotImplExceptionFilter]
     public class TemplatesController : ApiController
     {
         private ApplicationManager appManager = new ApplicationManager();

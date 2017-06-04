@@ -30,6 +30,7 @@ namespace CRM.WebApi.Infrastructure
         }
         public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, RequestContact requestContact, bool flag)
         {
+            if (requestContact == null) return null;
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
                 contactToAddOrUpdate.FullName = requestContact.FullName;

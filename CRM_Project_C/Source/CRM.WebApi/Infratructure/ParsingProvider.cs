@@ -20,16 +20,16 @@ namespace CRM.WebApi.Infrastructure
             switch (ext)
             {
                 case "xlsx":
-                    contacts = ReadExcelFileDOM(path);
+                    contacts = ReadExcelFile(path);
                         break;
                 case ".csv":
-                    contacts = File.ReadAllLines(path).Skip(1).Select(v => FromCsv(v)).ToList();
+                    contacts = File.ReadAllLines(path).Select(v => FromCsv(v)).ToList();
                     break;
                 default:
                     return null;
             }
 
-            return contacts.Where(y => y != null).ToList();
+            return contacts;//.Where(y => y != null).ToList();
         }
 
         static RequestContact FromCsv(string csvLine)
@@ -40,6 +40,7 @@ namespace CRM.WebApi.Infrastructure
             {
                 if (values[i] == null || values[i].Length < 2) return null;
             }
+            if (!EmailValidator(values[4])) return null;
             contactValues.FullName = values[0];
             contactValues.CompanyName = values[1];
             contactValues.Position = values[2];
@@ -47,7 +48,7 @@ namespace CRM.WebApi.Infrastructure
             contactValues.Email = values[4];
             return contactValues;
         }
-        static List<RequestContact> ReadExcelFileDOM(string filename)
+        static List<RequestContact> ReadExcelFile(string filename)
         {
             List<RequestContact> contacts = new List<RequestContact>();
             string[] strProperties = new string[5];
@@ -76,17 +77,20 @@ namespace CRM.WebApi.Infrastructure
                                 var stringTable = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
                                 if (stringTable != null)
                                 {
-                                    value = stringTable.SharedStringTable.
-                                        ElementAt(int.Parse(value)).InnerText;
+                                    value = stringTable.SharedStringTable.ElementAt(int.Parse(value)).InnerText;
                                 }
                             }
                             strProperties[j] = value;
                             j = j + 1;
                         }
+
+                       
                     }
                     j = 0;
-                    i = i + 1;
-                    if (strProperties.Any(p => p == null || p.Length < 2)) continue; // checks all nulls
+                    i++;
+
+                    if (strProperties.Any(p => p == null || p.Length < 2)) { contacts.Add(null); continue; }
+                    if (!EmailValidator(strProperties[4])) { contacts.Add(null); continue; }
                     contact = new RequestContact();
                     contact.FullName = strProperties[0];
                     contact.CompanyName = strProperties[1];
@@ -96,6 +100,19 @@ namespace CRM.WebApi.Infrastructure
                     contacts.Add(contact);
                 }
                 return contacts;
+            }
+        }
+
+        static bool EmailValidator(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
             }
         }
     }

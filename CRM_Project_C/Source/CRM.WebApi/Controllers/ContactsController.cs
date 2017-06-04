@@ -111,6 +111,7 @@ namespace CRM.WebApi.Controllers
             string ext = filename.Substring(filename.Length - 4);
             string path = Path.Combine(root, filename);
             int count = 0;
+
             List<RequestContact> contactsList = ParsingProvider.GetContactsFromFile(path, ext);
 
             if (contactsList == null) return BadRequest();
@@ -118,11 +119,12 @@ namespace CRM.WebApi.Controllers
             Contact contactToAdd = new Contact();
             foreach (var contact in contactsList)
             {
+
                 Contact addedcontact = await appManager.AddOrUpdateContact(contactToAdd, contact, true);
                 if (addedcontact != null) count++;
             }
 
-            return Ok(count);
+            return Ok($"{count} - Contacts added successfully, \n{contactsList.Count - 1 - count} - failed(please ensure that data entered correctly)");
         }
     }
 }
