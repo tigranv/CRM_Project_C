@@ -11,9 +11,9 @@
           </Key>
           <Property Name="ContactId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="FullName" Type="varchar" MaxLength="250" Nullable="false" />
-          <Property Name="CompanyName" Type="varchar" MaxLength="250" />
-          <Property Name="Position" Type="varchar" MaxLength="250" />
-          <Property Name="Country" Type="varchar" MaxLength="150" />
+          <Property Name="CompanyName" Type="varchar" MaxLength="250" Nullable="false" />
+          <Property Name="Position" Type="varchar" MaxLength="250" Nullable="false" />
+          <Property Name="Country" Type="varchar" MaxLength="150" Nullable="false" />
           <Property Name="Email" Type="varchar" MaxLength="250" Nullable="false" />
           <Property Name="GuID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="DateInserted" Type="datetime2" Precision="7" Nullable="false" />
@@ -93,9 +93,9 @@
           </Key>
           <Property Name="ContactId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FullName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CompanyName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Position" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
-          <Property Name="Country" Type="String" MaxLength="150" FixedLength="false" Unicode="false" />
+          <Property Name="CompanyName" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Position" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Country" Type="String" MaxLength="150" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Email" Type="String" MaxLength="250" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="GuID" Type="Guid" Nullable="false" />
           <Property Name="DateInserted" Type="DateTime" Nullable="false" Precision="7" />

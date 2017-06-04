@@ -2,45 +2,31 @@
 using CRM.EntityFrameWorkLib;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using System;
 using CRM.WebApi.Infrastructure;
+using System.Net.Http;
+using CRM.WebApi.Infratructure;
+using System.Net.Http.Headers;
 
 namespace CRM.WebApi.Controllers
 {
     public class TemplatesController : ApiController
     {
         private ApplicationManager appManager = new ApplicationManager();
-        // GET: api/Templates
+        private LoggerManager logger = new LoggerManager();
         public async Task<IHttpActionResult> GetAllTemplates()
         {
-            try
-            {
-                List<Template> alltemplates = await appManager.GetAllTemplates();
-                if (alltemplates == null) return NotFound();
-                return Ok(alltemplates);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }
+            List<Template> alltemplates = await appManager.GetAllTemplates();
+            if (alltemplates == null) return NotFound();
+            return Ok(alltemplates);
         }
 
-        // GET: api/Templates
-        public async Task<IHttpActionResult> GetTemplate(int? id)
+        [Route("api/templates/exceptions")]
+        public HttpResponseMessage GetLog()
         {
-            if (!id.HasValue) return BadRequest("No parameter");
-            try
-            {
-                Template templ = await appManager.GetTemplateById(id.Value);
-                if (templ == null) return NotFound();
-                return Ok(templ);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"{ex.Message}\n{ex.InnerException?.Message}");
-            }       
+            var response = new HttpResponseMessage { Content = new StringContent(logger.ReadLogErrorData())};
+            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+            return response;
         }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

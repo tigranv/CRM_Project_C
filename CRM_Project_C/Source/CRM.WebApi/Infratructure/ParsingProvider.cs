@@ -1,78 +1,122 @@
-﻿using CRM.EntityFrameWorkLib;
-using LinqToExcel;
+﻿using CRM.WebApi.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace CRM.WebApi.Infrastructure
 {
     public static class ParsingProvider
     {
-        public static List<Contact> GetContactsFromFile(byte[] baytarray)
+        public static List<RequestContact> GetContactsFromFile(string path, string ext)
         {
-            string path = @"C:\Users\Tigran PC\Desktop\TestExcelConverted.xlsx";
-            List<Contact> contacts = new List<Contact>();
-            Contact contact = new Contact();
+            List<RequestContact> contacts = new List<RequestContact>();
+            RequestContact contact = new RequestContact();
 
-            try
+            switch (ext)
             {
-                File.WriteAllBytes(path, baytarray);
-                string sheetName = "Sheet1";
-                var excelFile = new ExcelQueryFactory(path);
-
-                // ADD COLUMN MAPPINGS:
-                //excelFile.AddMapping("FullName", "FullName");
-                //excelFile.AddMapping("CompanyName", "CompanyName");
-                //excelFile.AddMapping("Position", "Position");
-                //excelFile.AddMapping("Country", "Country");
-                //excelFile.AddMapping("Email", "Email");
-
-                List<Row> contactList = (from item in excelFile.Worksheet<Row>(sheetName) select item).ToList();
-
-                foreach (Row item in contactList)
-                {
-                    contact.FullName = item["FullName"];
-                    contact.CompanyName = item["Company"];
-                    contact.Position = item["Position"];
-                    contact.Country = item["Country"];
-                    contact.Email = item["Email"];
-                    contact.GuID = Guid.NewGuid();
-                    contact.DateInserted = DateTime.Now;
-                    contacts.Add(contact);
-                }
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    path = path.Remove(path.Length - 4, 4) + ".csv";
-                    File.WriteAllBytes(path, baytarray);
-                    List<Contact> values = File.ReadAllLines(path)
-                                 .Skip(1)
-                                 .Select(v => FromCsv(v))
-                                 .ToList();
-                }
-                catch (Exception)
-                {
-
+                case "xlsx":
+                    contacts = ReadExcelFileDOM(path);
+                        break;
+                case ".csv":
+                    contacts = File.ReadAllLines(path).Skip(1).Select(v => FromCsv(v)).ToList();
+                    break;
+                default:
                     return null;
-                }
-               
             }
-            return contacts;
+
+            return contacts.Where(y => y != null).ToList();
         }
 
-        private static Contact FromCsv(string csvLine)
+        static RequestContact FromCsv(string csvLine)
         {
             string[] values = csvLine.Split(',');
-            Contact contactValues = new Contact();
+            RequestContact contactValues = new RequestContact();
+            for (int i = 0; i < 5; i++)
+            {
+                if (values[i] == null || values[i].Length < 2) return null;
+            }
             contactValues.FullName = values[0];
             contactValues.CompanyName = values[1];
             contactValues.Position = values[2];
             contactValues.Country = values[3];
             contactValues.Email = values[4];
             return contactValues;
+        }
+        static List<RequestContact> ReadExcelFileDOM(string filename)
+        {
+            List<RequestContact> contacts = new List<RequestContact>();
+            string[] strProperties = new string[5];
+            RequestContact contact;
+            int j = 0;
+
+            using (SpreadsheetDocument myDoc = SpreadsheetDocument.Open(filename, false))
+            {
+                WorkbookPart workbookPart = myDoc.WorkbookPart;
+                IEnumerable<Sheet> Sheets = myDoc.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>();
+                string relationshipId = Sheets?.First().Id.Value;
+                WorksheetPart worksheetPart = (WorksheetPart)myDoc.WorkbookPart.GetPartById(relationshipId);
+                SheetData sheetData = worksheetPart.Worksheet.GetFirstChild<SheetData>();
+                int i = 1;
+                string value;
+                foreach (Row r in sheetData.Elements<Row>())
+                {
+                    if (i != 1)
+                    {
+                        foreach (Cell c in r.Elements<Cell>())
+                        {
+                            if (c == null) continue;
+                            value = c.InnerText;
+                            if (c.DataType != null)
+                            {
+                                var stringTable = workbookPart.GetPartsOfType<SharedStringTablePart>().FirstOrDefault();
+                                if (stringTable != null)
+                                {
+                                    value = stringTable.SharedStringTable.
+                                        ElementAt(int.Parse(value)).InnerText;
+                                }
+                            }
+                            strProperties[j] = value;
+                            j = j + 1;
+                        }
+                    }
+                    j = 0;
+                    i = i + 1;
+                    if (strProperties.Any(p => p == null || p.Length < 2)) continue; // checks all nulls
+                    contact = new RequestContact();
+                    contact.FullName = strProperties[0];
+                    contact.CompanyName = strProperties[1];
+                    contact.Position = strProperties[2];
+                    contact.Country = strProperties[3];
+                    contact.Email = strProperties[4];
+                    contacts.Add(contact);
+                }
+                return contacts;
+            }
+        }
+    }
+
+    public class MyStreamProvider : MultipartFormDataStreamProvider
+    {
+        public string fileName;
+        public MyStreamProvider(string uploadPath)
+            : base(uploadPath)
+        {
+
+        }
+
+        public override string GetLocalFileName(HttpContentHeaders headers)
+        {
+            fileName = headers.ContentDisposition.FileName;
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                fileName = Guid.NewGuid().ToString() + ".data";
+            }
+            return fileName.Replace("\"", string.Empty);
         }
     }
 }

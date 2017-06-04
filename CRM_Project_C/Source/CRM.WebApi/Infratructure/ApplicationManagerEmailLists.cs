@@ -4,12 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
     public partial class ApplicationManager : IDisposable
     {
+        // EmailLists Manager
         public async Task<List<EmailList>> GetAllEmaillists()
         {
             db.Configuration.LazyLoadingEnabled = false;
@@ -19,51 +22,79 @@ namespace CRM.WebApi.Infrastructure
         {
             return await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == id);
         }
-
-        // update(flag = true) emaillist in db, or create(flag = false) new emaillist based on requestemaillist
-        public async Task<EmailList> AddOrUpdateEmailList(EmailList emailListToAddOrUpdate, RequestEmailList requestEmailList)
+        public async Task<EmailList> AddNewEmailList(RequestEmailList requestEmailList)
         {
+            EmailList newEmailList = new EmailList();
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
-                emailListToAddOrUpdate.EmailListName = requestEmailList.EmailListName;
+                newEmailList.EmailListName = requestEmailList.EmailListName;
 
                 if (requestEmailList.Contacts != null)
                 {
-                    emailListToAddOrUpdate.Contacts.Clear();
                     foreach (Guid guid in requestEmailList.Contacts)
                     {
                         var cont = await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
-                        if (cont != null) emailListToAddOrUpdate.Contacts.Add(cont);
+                        if (cont != null) newEmailList.Contacts.Add(cont);
                     }
                 }
 
-                db.EmailLists.AddOrUpdate(emailListToAddOrUpdate);
-
                 try
                 {
+                    db.EmailLists.Add(newEmailList);
                     await db.SaveChangesAsync();
                     transaction.Commit();
-                    return emailListToAddOrUpdate;
+                    return newEmailList;
                 }
                 catch
                 {
                     transaction.Rollback();
-                    if ((await EmailListExists(emailListToAddOrUpdate.EmailListID)))
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    throw;
                 }
             }
         }
-
+        public async Task<EmailList> ModifyEmailList(EmailList original, List<Guid> guidList, string name, bool flag)
+        {
+            using (DbContextTransaction transaction = db.Database.BeginTransaction())
+            {
+                if (name != null) original.EmailListName = name;
+                if(guidList != null)
+                {
+                    if (flag)
+                    {
+                        foreach (Guid guid in guidList)
+                        {
+                            var cont = await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+                            if (cont != null) original.Contacts.Add(cont);
+                        }
+                    }
+                    else
+                    {
+                        foreach (Guid guid in guidList)
+                        {
+                            var cont = await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
+                            if (cont != null) original.Contacts.Remove(cont);
+                        }
+                    }
+                }
+                
+                try
+                {
+                    db.EmailLists.AddOrUpdate(original);
+                    await db.SaveChangesAsync();
+                    transaction.Commit();
+                    return original;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
         public async Task<bool> DeleteEmailListById(int id)
         {
             var emailList = await GetEmailListById(id);
-            if (emailList == null) return false;
+            if (emailList == null) return true;
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
                 try
@@ -81,16 +112,12 @@ namespace CRM.WebApi.Infrastructure
             }
         }
 
-        public async Task<bool> EmailListExists(int id)
-        {
-            return await db.EmailLists.CountAsync(e => e.EmailListID == id) > 0;
-        }
 
+        // Templates Manager
         public async Task<Template> GetTemplateById(int id)
         {
             return await db.Templates.FindAsync(id);
         }
-
         public async Task<List<Template>> GetAllTemplates()
         {
             return await db.Templates.ToListAsync();

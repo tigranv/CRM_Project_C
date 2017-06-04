@@ -39,19 +39,25 @@ namespace CRM.WebApi.Infrastructure
 
             foreach (var contact in ContactsToSend)
             {
-                MailMessage mail = new MailMessage();
-                SmtpClient SmtpServer = new SmtpClient("smtp.mail.yahoo.com");
-                mail.From = new MailAddress("betcharutyunyan@yahoo.com");
-                mail.To.Add(contact.Email);
-                //mail.To.Add(string.Join(",", ContactsToSend.Select(x => x.Email)));
-                mail.Subject = "Test Mail";
-                mail.Body = Replace(templateContext, contact);
-                mail.IsBodyHtml = true;
-                ServicePointManager.ServerCertificateValidationCallback = delegate
-                (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                { return true; };
+                var messageText = Replace(templateContext, contact);
+                var msg = new MailMessage { Body = messageText, IsBodyHtml = true, Subject = $"Test for {contact.FullName}" };
+                msg.To.Add(contact.Email);
+                var sc = new SmtpClient();
+                sc.Send(msg);
 
-                SmtpServer.Send(mail);
+                //MailMessage mail = new MailMessage();
+                //SmtpClient SmtpServer = new SmtpClient();
+                ////mail.From = new MailAddress("betcharutyunyan@yahoo.com");
+                //mail.To.Add(contact.Email);
+                ////mail.To.Add(string.Join(",", ContactsToSend.Select(x => x.Email)));
+                //mail.Subject = "Test Mail";
+                //mail.Body = Replace(templateContext, contact);
+                //mail.IsBodyHtml = true;
+                ////ServicePointManager.ServerCertificateValidationCallback = delegate
+                ////(object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+                ////{ return true; };
+
+                //SmtpServer.Send(mail);
             }
         }
 

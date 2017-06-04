@@ -52,15 +52,18 @@ namespace CRM.WebApi.Filters
 
             else if (actionExecutedContext.Exception is NotImplementedException)
             {
-                actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.NotImplemented);
+                actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.NotImplemented)
+                {
+                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
+                };
             }
 
             else
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
-                    //Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
-                    Content = new StringContent("We apologize but an error occured within the application. Please try again later.", System.Text.Encoding.UTF8, "text/plain")
+                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
+                    //Content = new StringContent("We apologize but an error occured within the application. Please try again later.", System.Text.Encoding.UTF8, "text/plain")
                 };
             
             }
