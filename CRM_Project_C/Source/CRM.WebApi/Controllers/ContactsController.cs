@@ -23,7 +23,6 @@ namespace CRM.WebApi.Controllers
 
         public async Task<IHttpActionResult> GetAllContacts()
         {
-            throw new NullReferenceException("Argument can not be null");
             List<Contact> allcontacts = await appManager.GetAllContacts();
             if (allcontacts == null) return NotFound();
             var data = new List<ViewContactSimple>();
