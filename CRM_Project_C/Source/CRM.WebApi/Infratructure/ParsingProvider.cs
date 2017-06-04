@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using CRM.WebApi.Models.Request;
 
 namespace CRM.WebApi.Infrastructure
 {

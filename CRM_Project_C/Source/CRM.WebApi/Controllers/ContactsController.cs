@@ -10,6 +10,8 @@ using CRM.WebApi.Filters;
 using System.Net.Http;
 using System.Web;
 using System.IO;
+using CRM.WebApi.Models.Request;
+using CRM.WebApi.Models.Response;
 
 //TODO: Authentication must be added
 
@@ -125,6 +127,16 @@ namespace CRM.WebApi.Controllers
             }
 
             return Ok($"{count} - Contacts added successfully, \n{contactsList.Count - 1 - count} - failed(please ensure that data entered correctly)");
+        }
+
+        [Route("api/Contacts/bypages")]
+        public async Task<IHttpActionResult> PostQueryContacts([FromBody] RequestContact request, int start = 0, int rows = 5, string fn = "asc", string cmn = null, string cnt = null, string pos = null)
+        {
+            List<Contact> contacts = await appManager.GetQueryContacts(request, start, rows, fn, cmn = null, cnt, pos);
+            if (contacts == null) return NotFound();
+            var data = new List<ViewContactSimple>();
+            contacts.ForEach(p => data.Add(new ViewContactSimple(p)));
+            return Ok("optional");
         }
     }
 }

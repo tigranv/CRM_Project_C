@@ -1,5 +1,6 @@
 ﻿using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
+using CRM.WebApi.Models.Request;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;

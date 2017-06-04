@@ -1,5 +1,6 @@
 ﻿using CRM.EntityFrameWorkLib;
 using CRM.WebApi.Models;
+using CRM.WebApi.Models.Request;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -128,6 +129,13 @@ namespace CRM.WebApi.Infrastructure
 
             return dbContacts;
         }
+
+        internal Task<List<Contact>> GetQueryContacts(RequestContact request, int start, int rows, string fn, string v, string cnt, string pos)
+        {
+
+            throw new NotImplementedException();
+        }
+
         public void Dispose()
         {
             db.Dispose();

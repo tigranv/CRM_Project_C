@@ -6,6 +6,8 @@ using CRM.WebApi.Models;
 using CRM.WebApi.Infrastructure;
 using System.Threading.Tasks;
 using CRM.WebApi.Filters;
+using CRM.WebApi.Models.Request;
+using CRM.WebApi.Models.Response;
 
 namespace CRM.WebApi.Controllers
 {
