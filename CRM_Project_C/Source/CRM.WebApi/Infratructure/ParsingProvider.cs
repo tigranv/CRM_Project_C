@@ -13,10 +13,12 @@ namespace CRM.WebApi.Infrastructure
 {
     public static class ParsingProvider
     {
-        public static List<RequestContact> GetContactsFromFile(string path, string ext)
+        public static List<RequestContact> GetContactsFromFile(string path)
         {
             List<RequestContact> contacts = new List<RequestContact>();
             RequestContact contact = new RequestContact();
+            string ext = path.Substring(path.Length - 4);
+
 
             switch (ext)
             {
@@ -30,7 +32,7 @@ namespace CRM.WebApi.Infrastructure
                     return null;
             }
 
-            return contacts;//.Where(y => y != null).ToList();
+            return contacts;
         }
 
         static RequestContact FromCsv(string csvLine)
@@ -120,12 +122,11 @@ namespace CRM.WebApi.Infrastructure
 
     public class MyStreamProvider : MultipartFormDataStreamProvider
     {
-        public string fileName;
-        public MyStreamProvider(string uploadPath)
-            : base(uploadPath)
-        {
+        public MyStreamProvider(string uploadPath): base(uploadPath)
+        {}
 
-        }
+        private string fileName;
+        public string GetFileName { get { return fileName.Substring(1, fileName.Length - 2); } }
 
         public override string GetLocalFileName(HttpContentHeaders headers)
         {

@@ -1,12 +1,11 @@
 ﻿using CRM.EntityFrameWorkLib;
-using CRM.WebApi.Models;
 using CRM.WebApi.Models.Request;
+using CRM.WebApi.Models.Response;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
@@ -19,19 +18,20 @@ namespace CRM.WebApi.Infrastructure
             db = new CRMDataBaseModel();
         }
 
-        // Contacts Manager
-        public async Task<List<Contact>> GetAllContacts()
+        #region Contacts Manager
+        public async Task<List<Contact>> GetAllContactsAsync()
         {
             db.Configuration.LazyLoadingEnabled = false;
             return await db.Contacts.ToListAsync();
         }
-        public async Task<Contact> GetContactByGuId(Guid guid)
+        public async Task<Contact> GetContactByGuIdAsync(Guid guid)
         {
             return await db.Contacts.FirstOrDefaultAsync(x => x.GuID == guid);
         }
-        public async Task<Contact> AddOrUpdateContact(Contact contactToAddOrUpdate, RequestContact requestContact, bool flag)
+        public async Task<Contact> AddOrUpdateContactAsync(Contact contactToAddOrUpdate, RequestContact requestContact, bool flag)
         {
-            if (requestContact == null) return null;
+            if (requestContact == null) return null; // in case of uploading file.
+
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
                 contactToAddOrUpdate.FullName = requestContact.FullName;
@@ -46,20 +46,20 @@ namespace CRM.WebApi.Infrastructure
                     foreach (var emaillistId in requestContact.EmailLists)
                     {
                         EmailList emlist = await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == emaillistId);
-                        if(emlist != null) contactToAddOrUpdate.EmailLists.Add(emlist);
+                        if (emlist != null) contactToAddOrUpdate.EmailLists.Add(emlist);
                     }
                 }
 
                 if (flag)
                 {
-                    if (flag && (await db.Contacts.CountAsync(e => e.Email == contactToAddOrUpdate.Email) > 0)) return null;
+                    if ((await db.Contacts.CountAsync(e => e.Email == contactToAddOrUpdate.Email) > 0)) return null;
                     contactToAddOrUpdate.GuID = Guid.NewGuid();
                     contactToAddOrUpdate.DateInserted = DateTime.Now;
                     db.Contacts.Add(contactToAddOrUpdate);
                 }
                 else
                 {
-                    if (!flag && (await db.Contacts.CountAsync(e => e.Email == contactToAddOrUpdate.Email && e.GuID != contactToAddOrUpdate.GuID) > 0)) return null;
+                    if ((await db.Contacts.CountAsync(e => e.Email == contactToAddOrUpdate.Email && e.GuID != contactToAddOrUpdate.GuID) > 0)) return null;
                     contactToAddOrUpdate.Modified = DateTime.Now;
                     db.Contacts.AddOrUpdate(contactToAddOrUpdate);
                 }
@@ -75,11 +75,11 @@ namespace CRM.WebApi.Infrastructure
                     transaction.Rollback();
                     throw;
                 }
-            }     
+            }
         }
-        public async Task<bool> DeleteContactByGuid(Guid guid)
+        public async Task<bool> DeleteContactByGuidAsync(Guid guid)
         {
-            var contact = await GetContactByGuId(guid);
+            var contact = await GetContactByGuIdAsync(guid);
             if (contact == null) return false;
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
@@ -97,44 +97,64 @@ namespace CRM.WebApi.Infrastructure
                 }
             }
         }
-        public async Task<int> DeleteContactByGuidList(List<Guid> guidlist)
+        public async Task<int> DeleteContactByGuidListAsync(List<Guid> guidlist)
         {
             int count = 0;
             foreach (var item in guidlist)
             {
-                count += (await DeleteContactByGuid(item)) ? 1 : 0;
+                count += (await DeleteContactByGuidAsync(item)) ? 1 : 0;
             }
             return count;
         }
-        public async Task<List<Contact>> GetContactsByGuIdList(List<Guid> GuIdList)
+        public async Task<List<Contact>> GetContactsByGuIdListAsync(List<Guid> GuIdList)
         {
             List<Contact> ContactsList = new List<Contact>();
             foreach (var guid in GuIdList)
             {
-                ContactsList.Add(await GetContactByGuId(guid));
+                ContactsList.Add(await GetContactByGuIdAsync(guid));
             }
 
             return ContactsList;
         }
-        public async Task<int> GetPagies(int perPage)
-        {
-            return await db.Contacts.CountAsync() >= perPage ? (await db.Contacts.CountAsync() % perPage == 0) ?
-                (await db.Contacts.CountAsync() / perPage) : (await db.Contacts.CountAsync() / perPage + 1) : 1;
-        }
-        public async Task<List<Contact>> GetContactsByPage(int start, int rows, bool ord)
+        public async Task<KeyValuePair<int, List<ViewContactSimple>>> GetQueryContactsAsync(RequestContact request, int? start, int? rows, int?
+            dt, int? fn, int? cmp, int? cnt, int? pos)
         {
             db.Configuration.LazyLoadingEnabled = false;
-            var dbContacts = await (ord ? db.Contacts.OrderBy(x => x.DateInserted).Skip(start).Take(rows).ToListAsync() :
-                db.Contacts.OrderByDescending(x => x.DateInserted).Skip(start).Take(rows).ToListAsync());
+            IQueryable<Contact> data = db.Contacts;
 
-            return dbContacts;
+            // TODO: Add OrderBy().ThenBy()..... multiple ordring
+            if (request != null)
+            {
+                if (request.FullName != null) { data = data.Where(x => x.FullName == request.FullName); }
+                if (request.CompanyName != null) { data = data.Where(x => x.CompanyName == request.CompanyName); }
+                if (request.Country != null) { data = data.Where(x => x.Country == request.Country); }
+                if (request.Position != null) { data = data.Where(x => x.Position == request.Position); }
+                if (request.Email != null) { data = data.Where(x => x.Email == request.Email); }
+            }
+
+            if (fn.HasValue || cmp.HasValue || cnt.HasValue || pos.HasValue || dt.HasValue)
+            {
+                if (fn.HasValue) data = fn != 0 ? data.OrderBy(x => x.FullName) : data.OrderByDescending(x => x.FullName);
+                if (cmp.HasValue) data = cmp != 0 ? data.OrderBy(x => x.CompanyName) : data.OrderByDescending(x => x.CompanyName);
+                if (cnt.HasValue) data = cnt != 0 ? data.OrderBy(x => x.Country) : data.OrderByDescending(x => x.Country);
+                if (pos.HasValue) data = pos != 0 ? data.OrderBy(x => x.Position) : data.OrderByDescending(x => x.Position);
+                if (dt.HasValue) data = dt != 0 ? data.OrderBy(x => x.DateInserted) : data.OrderByDescending(x => x.DateInserted);
+            }
+            else data = data.OrderBy(x => x.DateInserted);
+
+            int pagecount = 1;
+            if (start.HasValue && rows.HasValue) pagecount = await data.CountAsync() >= rows.Value ? ( await data.CountAsync() % rows.Value == 0) ?
+                    (await data.CountAsync() / rows.Value) : (await data.CountAsync() / rows.Value + 1) : 1;
+
+
+            if (start.HasValue && rows.HasValue) data = data.Skip(start.Value).Take(rows.Value);
+
+            var contacts = new List<ViewContactSimple>();
+            await data.ForEachAsync(p => contacts.Add(new ViewContactSimple(p)));
+           
+            return new KeyValuePair<int, List<ViewContactSimple>>(pagecount, contacts);
         }
-
-        internal Task<List<Contact>> GetQueryContacts(RequestContact request, int start, int rows, string fn, string v, string cnt, string pos)
-        {
-
-            throw new NotImplementedException();
-        }
+        #endregion
 
         public void Dispose()
         {

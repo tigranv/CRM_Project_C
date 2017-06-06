@@ -13,11 +13,10 @@ namespace CRM.WebApi.Infratructure
         {
             FileTarget loggerTarget = (FileTarget)LogManager.Configuration.FindTargetByName("file");
             loggerTarget.DeleteOldFileOnStartup = false;
-        }
-       
+        } 
         public void LogError(Exception ex, HttpMethod request, Uri uri)
         {
-            Logger.Error($"  Request: [ {request} ] : URL [ {uri} ]\nError message: [ {ex.Message} ]\nInner message: [ {ex.InnerException?.Message} ]\n" + new string('-', 120));
+            Logger.Error($"  Request: [ {request} ] : URL [ {uri} ]\nError message: [ {ex.Message} ]\nInner message: [ {ex.InnerException?.Message} ]\n" + new string('-', 140));
         }
 
         public string ReadLogErrorData()

@@ -1,29 +1,26 @@
 ﻿using CRM.EntityFrameWorkLib;
-using CRM.WebApi.Models;
 using CRM.WebApi.Models.Request;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
     public partial class ApplicationManager : IDisposable
     {
-        // EmailLists Manager
-        public async Task<List<EmailList>> GetAllEmaillists()
+        #region EmailLists Manager
+        public async Task<List<EmailList>> GetAllEmaillistsAsync()
         {
             db.Configuration.LazyLoadingEnabled = false;
             return await db.EmailLists.ToListAsync();
         }
-        public async Task<EmailList> GetEmailListById(int id)
+        public async Task<EmailList> GetEmailListByIdAsync(int id)
         {
             return await db.EmailLists.FirstOrDefaultAsync(x => x.EmailListID == id);
         }
-        public async Task<EmailList> AddNewEmailList(RequestEmailList requestEmailList)
+        public async Task<EmailList> AddNewEmailListAsync(RequestEmailList requestEmailList)
         {
             EmailList newEmailList = new EmailList();
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
@@ -53,12 +50,12 @@ namespace CRM.WebApi.Infrastructure
                 }
             }
         }
-        public async Task<EmailList> ModifyEmailList(EmailList original, List<Guid> guidList, string name, bool flag)
+        public async Task<EmailList> ModifyEmailListAsync(EmailList original, List<Guid> guidList, string name, bool flag)
         {
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
                 if (name != null) original.EmailListName = name;
-                if(guidList != null)
+                if (guidList != null)
                 {
                     if (flag)
                     {
@@ -77,7 +74,7 @@ namespace CRM.WebApi.Infrastructure
                         }
                     }
                 }
-                
+
                 try
                 {
                     db.EmailLists.AddOrUpdate(original);
@@ -92,9 +89,9 @@ namespace CRM.WebApi.Infrastructure
                 }
             }
         }
-        public async Task<bool> DeleteEmailListById(int id)
+        public async Task<bool> DeleteEmailListByIdAsync(int id)
         {
-            var emailList = await GetEmailListById(id);
+            var emailList = await GetEmailListByIdAsync(id);
             if (emailList == null) return true;
             using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
@@ -113,15 +110,48 @@ namespace CRM.WebApi.Infrastructure
             }
         }
 
+        #endregion
 
-        // Templates Manager
-        public async Task<Template> GetTemplateById(int id)
+        #region Templates Manager
+        public async Task<Template> GetTemplateByIdAsync(int id)
         {
             return await db.Templates.FindAsync(id);
         }
-        public async Task<List<Template>> GetAllTemplates()
+        public async Task<List<Template>> GetAllTemplatesAsync()
         {
             return await db.Templates.ToListAsync();
         }
+
+        #endregion
+
+        #region Developer Room
+        public async Task<bool> ResetAppAsync(string path)
+        {
+            await db.Database.ExecuteSqlCommandAsync("DELETE FROM [dbo].[EmailLists]");
+            await db.Database.ExecuteSqlCommandAsync("DELETE FROM [dbo].[Contacts]");
+
+            List<RequestContact> contactsList = ParsingProvider.GetContactsFromFile(path);
+
+            if (contactsList == null) return false;
+            Contact contactToAdd = new Contact();
+            List<Guid> guidList = new List<Guid>();
+
+            foreach (var contact in contactsList)
+            {
+                Contact addedcontact = await AddOrUpdateContactAsync(contactToAdd, contact, true);
+                if (contact != null)
+                    guidList.Add(addedcontact.GuID);
+            }
+
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "All", Contacts = guidList });
+            guidList.RemoveRange(9, 5);
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Armenian", Contacts = guidList });
+            guidList.RemoveRange(5, 4);
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "VIP", Contacts = guidList });
+
+            return true;
+        }
+
+        #endregion
     }
 }

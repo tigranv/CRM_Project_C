@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Http;
 using CRM.EntityFrameWorkLib;
-using CRM.WebApi.Models;
 using CRM.WebApi.Infrastructure;
 using System.Threading.Tasks;
 using CRM.WebApi.Filters;
@@ -14,10 +13,14 @@ namespace CRM.WebApi.Controllers
     [NotImplExceptionFilterAttribute]
     public class EmailListsController : ApiController
     {
-        private ApplicationManager appManager = new ApplicationManager();
+        private ApplicationManager appManager;
+        public EmailListsController()
+        {
+            appManager = new ApplicationManager();
+        }
         public async Task<IHttpActionResult> GetAllEmailLists()
         {
-            List<EmailList> alllists = await appManager.GetAllEmaillists();
+            List<EmailList> alllists = await appManager.GetAllEmaillistsAsync();
             if (alllists == null) return NotFound();
 
             var data = new List<ViewEmailListSimple>();
@@ -27,7 +30,7 @@ namespace CRM.WebApi.Controllers
 
         public async Task<IHttpActionResult> GetEmailListById(int id)
         {
-            EmailList emaillist = await appManager.GetEmailListById(id);
+            EmailList emaillist = await appManager.GetEmailListByIdAsync(id);
             if (emaillist == null) return NotFound();
             return Ok(new ViewEmailList(emaillist));
         }
@@ -35,10 +38,10 @@ namespace CRM.WebApi.Controllers
         [Route("api/EmailLists/update")]
         public async Task<IHttpActionResult> PutUpdateEmailListContacts([FromBody] List<Guid> guidlist, [FromUri] int id, [FromUri] bool flag)
         {
-            EmailList emailListToUpdate = await appManager.GetEmailListById(id);
+            EmailList emailListToUpdate = await appManager.GetEmailListByIdAsync(id);
             if (emailListToUpdate == null) return NotFound();
 
-            EmailList updatedEmailList = await appManager.ModifyEmailList(emailListToUpdate, guidlist, null, flag);
+            EmailList updatedEmailList = await appManager.ModifyEmailListAsync(emailListToUpdate, guidlist, null, flag);
             if (updatedEmailList != null) return Ok(new ViewEmailList(updatedEmailList));
             return BadRequest();
         }
@@ -46,10 +49,10 @@ namespace CRM.WebApi.Controllers
         public async Task<IHttpActionResult> PutUpdateEmailListFull([FromBody] RequestEmailList emailList)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            EmailList emailListToUpdate = await appManager.GetEmailListById(emailList.EmailListID);
+            EmailList emailListToUpdate = await appManager.GetEmailListByIdAsync(emailList.EmailListID);
             if (emailListToUpdate == null) return NotFound();
 
-            EmailList updatedEmailList = await appManager.ModifyEmailList(emailListToUpdate, emailList.Contacts, emailList.EmailListName, true);
+            EmailList updatedEmailList = await appManager.ModifyEmailListAsync(emailListToUpdate, emailList.Contacts, emailList.EmailListName, true);
             if (updatedEmailList != null) Ok(updatedEmailList);
             return BadRequest();
         }
@@ -58,13 +61,13 @@ namespace CRM.WebApi.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            EmailList newEmailList = await appManager.AddNewEmailList(emailList);
+            EmailList newEmailList = await appManager.AddNewEmailListAsync(emailList);
             return Created($"Contacts?id = {newEmailList.EmailListID}", new ViewEmailList(newEmailList));
         }
 
         public async Task<IHttpActionResult> DeleteEmailList(int id)
         {
-            if (!(await appManager.DeleteEmailListById(id))) return BadRequest();
+            if (!(await appManager.DeleteEmailListByIdAsync(id))) return BadRequest();
             return Ok();
         }
 

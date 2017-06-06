@@ -1,41 +1,35 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using CRM.EntityFrameWorkLib;
 using System.Net.Mail;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Security;
 using System.IO;
 using System;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CRM.WebApi.Infrastructure
 {
-    //TODO check try catchies
     public class EmailProvider: IDisposable
     {
-        ApplicationManager appmanager = new ApplicationManager();
-        private string Replace(string templateText, Contact c)
+        ApplicationManager appmanager;
+        public EmailProvider()
         {
-            return templateText.Replace("{FullName}", c.FullName).Replace("{CompanyName}", c.CompanyName);
+            appmanager = new ApplicationManager();
         }
-
-        public async Task SendEmailToContacts(List<Contact> ContactsToSend, int templateId)
+        public async Task SendEmailAsync(List<Contact> ContactsToSend, int templateId)
         {
-            string filename = (await appmanager.GetTemplateById(templateId)).TemplateName;
+            string filename = (await appmanager.GetTemplateByIdAsync(templateId)).TemplateName;
             string path = string.Empty;
             string templateContext = string.Empty;
 
             if (filename != null)
             {
-                path = System.Web.HttpContext.Current?.Request.MapPath($"~//Templates//{filename}");
+                path = HttpContext.Current?.Request.MapPath($"~//Templates//{filename}");
                 templateContext = File.ReadAllText(path);
             }
             else
             {
-                // TODO exception handling
+                templateContext = "Test Email to {FullName} from  {CompanyName}";
             }
-
 
             foreach (var contact in ContactsToSend)
             {
@@ -44,21 +38,11 @@ namespace CRM.WebApi.Infrastructure
                 msg.To.Add(contact.Email);
                 var sc = new SmtpClient();
                 sc.Send(msg);
-
-                //MailMessage mail = new MailMessage();
-                //SmtpClient SmtpServer = new SmtpClient();
-                ////mail.From = new MailAddress("betcharutyunyan@yahoo.com");
-                //mail.To.Add(contact.Email);
-                ////mail.To.Add(string.Join(",", ContactsToSend.Select(x => x.Email)));
-                //mail.Subject = "Test Mail";
-                //mail.Body = Replace(templateContext, contact);
-                //mail.IsBodyHtml = true;
-                ////ServicePointManager.ServerCertificateValidationCallback = delegate
-                ////(object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
-                ////{ return true; };
-
-                //SmtpServer.Send(mail);
             }
+        }
+        private string Replace(string templateText, Contact c)
+        {
+            return templateText.Replace("{FullName}", c.FullName).Replace("{CompanyName}", c.CompanyName);
         }
 
         public void Dispose()

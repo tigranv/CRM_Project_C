@@ -15,24 +15,23 @@ namespace CRM.WebApi.Controllers
         EmailProvider emprovider = new EmailProvider();
         public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> guidlist, [FromUri] int template)
         {
-            List<Contact> ContactsToSend = await appManager.GetContactsByGuIdList(guidlist);
+            List<Contact> ContactsToSend = await appManager.GetContactsByGuIdListAsync(guidlist);
             if (ContactsToSend.Count == 0) return NotFound();
-            await emprovider.SendEmailToContacts(ContactsToSend, template);
+            await emprovider.SendEmailAsync(ContactsToSend, template);
             return Ok();   
         }
 
         public async Task<IHttpActionResult> PostSendEmailsByEmailList([FromUri] int template, [FromUri]  int emaillistId)
         {
-            EmailList emlist = await appManager.GetEmailListById(emaillistId);
+            EmailList emlist = await appManager.GetEmailListByIdAsync(emaillistId);
             if (emlist == null) return NotFound();
-            List<Contact> list = new List<Contact>();
+            List<Contact> contactsTosend = new List<Contact>();
             foreach (var item in emlist.Contacts)
             {
-                if(item != null)
-                list.Add(item);
+                if(item != null) contactsTosend.Add(item);
             }
 
-            await emprovider.SendEmailToContacts(list, template);
+            await emprovider.SendEmailAsync(contactsTosend, template);
             return Ok();
         }
 
