@@ -109,7 +109,6 @@ namespace CRM.WebApi.Infrastructure
                 }
             }
         }
-
         #endregion
 
         #region Templates Manager
@@ -121,7 +120,6 @@ namespace CRM.WebApi.Infrastructure
         {
             return await db.Templates.ToListAsync();
         }
-
         #endregion
 
         #region Developer Room

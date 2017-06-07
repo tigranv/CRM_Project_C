@@ -11,16 +11,20 @@ namespace CRM.WebApi.Controllers
     [NotImplExceptionFilterAttribute]
     public class SendEmailsController : ApiController
     {
-        ApplicationManager appManager = new ApplicationManager();
-        EmailProvider emprovider = new EmailProvider();
+        ApplicationManager appManager;
+        EmailProvider emailProvider;
+        public SendEmailsController()
+        {
+            appManager = new ApplicationManager();
+            emailProvider = new EmailProvider();
+        }
         public async Task<IHttpActionResult> PostSendEmails([FromBody] List<Guid> guidlist, [FromUri] int template)
         {
             List<Contact> ContactsToSend = await appManager.GetContactsByGuIdListAsync(guidlist);
             if (ContactsToSend.Count == 0) return NotFound();
-            await emprovider.SendEmailAsync(ContactsToSend, template);
+            await emailProvider.SendEmailAsync(ContactsToSend, template);
             return Ok();   
         }
-
         public async Task<IHttpActionResult> PostSendEmailsByEmailList([FromUri] int template, [FromUri]  int emaillistId)
         {
             EmailList emlist = await appManager.GetEmailListByIdAsync(emaillistId);
@@ -31,16 +35,15 @@ namespace CRM.WebApi.Controllers
                 if(item != null) contactsTosend.Add(item);
             }
 
-            await emprovider.SendEmailAsync(contactsTosend, template);
+            await emailProvider.SendEmailAsync(contactsTosend, template);
             return Ok();
         }
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 appManager.Dispose();
-                emprovider.Dispose();
+                emailProvider.Dispose();
             }
             base.Dispose(disposing);
         }

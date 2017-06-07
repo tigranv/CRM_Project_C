@@ -2,8 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace CRM.WebApi.Models.Response
 {
@@ -17,10 +15,10 @@ namespace CRM.WebApi.Models.Response
         public ViewContact(Contact contact)
         {
             FullName = contact.FullName;
-            Position = contact.Position ?? "Not Specified";
+            Position = contact.Position;
             Email = contact.Email;
-            Country = contact.Country ?? "Not Specified";
-            CompanyName = contact.CompanyName ?? "Not Specified";
+            Country = contact.Country;
+            CompanyName = contact.CompanyName;
             GuID = contact.GuID;
             EmailLists = new List<ViewEmailListSimple>();
 

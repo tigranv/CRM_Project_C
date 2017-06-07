@@ -1,13 +1,9 @@
 ﻿using CRM.EntityFrameWorkLib;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace CRM.WebApi.Models.Response
 {
-
     [JsonObject]
     public class ViewContactSimple
     {
@@ -18,9 +14,9 @@ namespace CRM.WebApi.Models.Response
         public ViewContactSimple(Contact contact)
         {
             FullName = contact.FullName;
-            CompanyName = contact.CompanyName ?? "Not Specified";
-            Position = contact.Position ?? "Not Specified";
-            Country = contact.Country ?? "Not Specified";
+            CompanyName = contact.CompanyName;
+            Position = contact.Position;
+            Country = contact.Country;
             Email = contact.Email;
             GuID = contact.GuID;
         }
@@ -34,5 +30,4 @@ namespace CRM.WebApi.Models.Response
         public string Email { get; set; }
         public Guid GuID { get; set; }
     }
-
 }

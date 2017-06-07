@@ -16,8 +16,13 @@ namespace CRM.WebApi.Controllers
     [NotImplExceptionFilter]
     public class TemplatesController : ApiController
     {
-        private ApplicationManager appManager = new ApplicationManager();
-        private LoggerManager logger = new LoggerManager();
+        private ApplicationManager appManager;
+        private LoggerManager logger;
+        public TemplatesController()
+        {
+            appManager = new ApplicationManager();
+            logger = new LoggerManager();
+        }
         public async Task<IHttpActionResult> GetAllTemplates()
         {
             List<Template> alltemplates = await appManager.GetAllTemplatesAsync();
@@ -50,7 +55,6 @@ namespace CRM.WebApi.Controllers
                 response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
                 return response; 
         }
-
         #endregion
 
         protected override void Dispose(bool disposing)

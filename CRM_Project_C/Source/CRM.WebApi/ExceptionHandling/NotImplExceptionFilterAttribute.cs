@@ -28,16 +28,13 @@ namespace CRM.WebApi.Filters
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
-                    ReasonPhrase = "Bad Request"
                 };
             }
-
             else if (actionExecutedContext.Exception is DataException)
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.Conflict)
                 { 
                     Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
-                    ReasonPhrase = "DataBase Exception"
                 };
             }
 
@@ -46,10 +43,8 @@ namespace CRM.WebApi.Filters
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.Conflict)
                 {
                     Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
-                    ReasonPhrase = "Entity Exception"
                 };
             }
-
             else if (actionExecutedContext.Exception is NotImplementedException)
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.NotImplemented)
@@ -57,7 +52,6 @@ namespace CRM.WebApi.Filters
                     Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
                 };
             }
-
             else
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
