@@ -8,7 +8,7 @@ namespace CRM.WebApi.Infratructure
 {
     public class ApplicationLoggerManager
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         public ApplicationLoggerManager()
         {
             FileTarget loggerTarget = (FileTarget)LogManager.Configuration.FindTargetByName("file");
@@ -16,7 +16,7 @@ namespace CRM.WebApi.Infratructure
         } 
         public void LogError(Exception ex, HttpMethod request, Uri uri)
         {
-            Logger.Error($"  Request: [ {request} ] : URL [ {uri} ]\nError message: [ {ex.Message} ]\nInner message: [ {ex.InnerException?.Message} ]\n" + new string('-', 140));
+            logger.Error($"  Request: [ {request} ] : URL [ {uri} ]\nError message: [ {ex.Message} ]\nInner message: [ {ex.InnerException?.Message} ]\n" + new string('-', 140));
         }
 
         public string ReadLogErrorData()
@@ -25,7 +25,7 @@ namespace CRM.WebApi.Infratructure
             var logEventInfo = new LogEventInfo { TimeStamp = DateTime.Now };
             string fileName = fileTarget.FileName.Render(logEventInfo);
             if (!File.Exists(fileName))
-                File.Create($"{logEventInfo.TimeStamp}.log");
+                File.Create("{$logEventInfo.TimeStamp}.log");
             var data = File.ReadAllLines(fileName);
             string path = System.Web.HttpContext.Current?.Request.MapPath("~//Templates//LogErrors.html");
             var html = File.ReadAllText(path);

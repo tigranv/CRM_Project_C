@@ -3,13 +3,7 @@ using CRM.EntityFrameWorkLib;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using CRM.WebApi.Infrastructure;
-using System.Net.Http;
-using CRM.WebApi.Infratructure;
-using System.Net.Http.Headers;
 using CRM.WebApi.Filters;
-using System.Web;
-using System.IO;
-using System;
 
 namespace CRM.WebApi.Controllers
 {
@@ -18,11 +12,9 @@ namespace CRM.WebApi.Controllers
     public class TemplatesController : ApiController
     {
         private ApplicationManager appManager;
-        private ApplicationLoggerManager logger;
         public TemplatesController()
         {
             appManager = new ApplicationManager();
-            logger = new ApplicationLoggerManager();
         }
         public async Task<IHttpActionResult> GetAllTemplates()
         {
@@ -30,33 +22,6 @@ namespace CRM.WebApi.Controllers
             if (alltemplates == null) return NotFound();
             return Ok(alltemplates);
         }
-
-        #region Developer Room
-        [Route("api/templates/exceptions")]
-        public HttpResponseMessage GetLogs()
-        {
-            var response = new HttpResponseMessage { Content = new StringContent(logger.ReadLogErrorData()) };
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
-            return response;
-        }
-
-        [Route("api/templates/resetapp")]
-        public async Task<HttpResponseMessage> GetResetDatabase()
-        {
-            var response = new HttpResponseMessage();
-            string filename = HttpContext.Current.Server.MapPath("~/Uploads//ResetCSV.csv");
-            string htmlPath = HttpContext.Current.Server.MapPath($"~//Templates//Reset.html");
-            string responseText = File.ReadAllText(htmlPath).Replace("{date}", DateTime.Now.ToString());
-
-            response.Content = new StringContent(responseText);
-            response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/html");
-
-            if (await appManager.ResetAppAsync(Path.Combine(filename)))
-                return response;
-                response.StatusCode = System.Net.HttpStatusCode.InternalServerError;
-                return response; 
-        }
-        #endregion
 
         protected override void Dispose(bool disposing)
         {
