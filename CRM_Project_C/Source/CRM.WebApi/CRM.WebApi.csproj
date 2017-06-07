@@ -217,7 +217,6 @@
     <Compile Include="Models\Request\RequestEmailList.cs" />
     <Compile Include="Models\Request\RequestContact.cs" />
     <Compile Include="Models\Response\ViewContact.cs" />
-    <Compile Include="Models\Response\ViewContactQuery.cs" />
     <Compile Include="Models\Response\ViewContactSimple.cs" />
     <Compile Include="Models\Response\ViewEmailList.cs" />
     <Compile Include="Models\Response\ViewEmailListSimple.cs" />
