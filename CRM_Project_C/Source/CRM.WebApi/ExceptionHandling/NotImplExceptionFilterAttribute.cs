@@ -17,7 +17,7 @@ namespace CRM.WebApi.Filters
     //TODO: exception handling need to add
     public class NotImplExceptionFilterAttribute : ExceptionFilterAttribute
     {
-        private readonly LoggerManager log = new LoggerManager();
+        private readonly ApplicationLoggerManager log = new ApplicationLoggerManager();
 
         public override Task OnExceptionAsync(HttpActionExecutedContext actionExecutedContext, CancellationToken cancellationToken)
         {

@@ -13,15 +13,16 @@ using System;
 
 namespace CRM.WebApi.Controllers
 {
+    //[Authorize]
     [NotImplExceptionFilter]
     public class TemplatesController : ApiController
     {
         private ApplicationManager appManager;
-        private LoggerManager logger;
+        private ApplicationLoggerManager logger;
         public TemplatesController()
         {
             appManager = new ApplicationManager();
-            logger = new LoggerManager();
+            logger = new ApplicationLoggerManager();
         }
         public async Task<IHttpActionResult> GetAllTemplates()
         {

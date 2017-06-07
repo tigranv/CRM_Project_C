@@ -6,10 +6,10 @@ using System.Net.Http;
 
 namespace CRM.WebApi.Infratructure
 {
-    public class LoggerManager
+    public class ApplicationLoggerManager
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public LoggerManager()
+        public ApplicationLoggerManager()
         {
             FileTarget loggerTarget = (FileTarget)LogManager.Configuration.FindTargetByName("file");
             loggerTarget.DeleteOldFileOnStartup = false;

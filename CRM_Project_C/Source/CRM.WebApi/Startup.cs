@@ -1,10 +1,14 @@
-﻿using Microsoft.Owin;
+﻿using CRM.WebApi.Infratructure;
+using CRM.WebApi.Providers;
+using Microsoft.Owin;
+using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json;
 using Owin;
+using System;
 using System.Web.Http;
 
-[assembly: OwinStartup(typeof(CRM.WebApi.Startup))]
 
+[assembly: OwinStartup(typeof(CRM.WebApi.Startup))]
 
 namespace CRM.WebApi
 {
@@ -12,6 +16,8 @@ namespace CRM.WebApi
     {
         public void Configuration(IAppBuilder app)
         {
+            ConfigureOAuth(app);
+
             app.UseWelcomePage("/");
 
             HttpConfiguration httpConfig = new HttpConfiguration();
@@ -25,7 +31,7 @@ namespace CRM.WebApi
 
         private void ConfigureWebApi(HttpConfiguration config)
         {
-           
+
             config.MapHttpAttributeRoutes();
 
             config.Routes.MapHttpRoute(
@@ -34,11 +40,30 @@ namespace CRM.WebApi
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            //config.Filters.Add(new NotImplExceptionFilterAttribute);
-            // var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
-            //jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+        }
+        
+        private void ConfigureOAuth(IAppBuilder app)
+        {
+            app.CreatePerOwinContext(AuthDbContext.Create);
+            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+
+            var options = new OAuthAuthorizationServerOptions
+            {
+                AllowInsecureHttp = true,
+                TokenEndpointPath = new PathString("/api/token"),
+                AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
+                Provider = new ApplicationOAuthProvider()
+            };
+
+            app.UseOAuthAuthorizationServer(options);
+            app.UseOAuthBearerAuthentication
+            (
+                new OAuthBearerAuthenticationOptions
+                {
+                    Provider = new OAuthBearerAuthenticationProvider()
+                }
+            );
         }
     }
 }

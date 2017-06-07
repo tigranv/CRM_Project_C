@@ -10,6 +10,7 @@ using CRM.WebApi.Models.Response;
 
 namespace CRM.WebApi.Controllers
 {
+    //[Authorize]
     [NotImplExceptionFilterAttribute]
     public class EmailListsController : ApiController
     {

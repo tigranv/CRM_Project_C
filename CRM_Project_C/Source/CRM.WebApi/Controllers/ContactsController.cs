@@ -12,10 +12,9 @@ using System.IO;
 using CRM.WebApi.Models.Request;
 using CRM.WebApi.Models.Response;
 
-//TODO: Authentication must be added
-
 namespace CRM.WebApi.Controllers
 {
+    //[Authorize]
     [NotImplExceptionFilter]
     public class ContactsController : ApiController
     {

@@ -8,6 +8,7 @@ using System.Web.Http;
 
 namespace CRM.WebApi.Controllers
 {
+    //[Authorize]
     [NotImplExceptionFilterAttribute]
     public class SendEmailsController : ApiController
     {
