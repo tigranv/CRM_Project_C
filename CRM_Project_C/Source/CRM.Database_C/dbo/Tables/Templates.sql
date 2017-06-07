@@ -3,3 +3,4 @@
     [TemplateName] NVARCHAR (100) NOT NULL,
     PRIMARY KEY CLUSTERED ([TemplateId] ASC)
 );
+

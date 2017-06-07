@@ -238,10 +238,10 @@
     <Compile Include="Infrastructure\ApplicationEmailListsManager.cs" />
     <Compile Include="Infrastructure\ApplicationUserManager.cs" />
     <Compile Include="Providers\EmailProvider.cs" />
-    <Compile Include="Models\OAuthModels\IdentityModel.cs" />
+    <Compile Include="Models\OAuthModels\AuthDbContext.cs" />
     <Compile Include="Infrastructure\ApplicationLoggerManager.cs" />
     <Compile Include="Providers\ParsingProvider.cs" />
-    <Compile Include="Models\OAuthModels\RegisterBindingModel.cs" />
+    <Compile Include="Models\OAuthModels\UserRegisterModel.cs" />
     <Compile Include="Models\Request\RequestEmailList.cs" />
     <Compile Include="Models\Request\RequestContact.cs" />
     <Compile Include="Models\Response\ViewContact.cs" />

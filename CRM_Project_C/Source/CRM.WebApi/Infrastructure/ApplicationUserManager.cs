@@ -1,41 +1,48 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using CRM.WebApi.Models.OAuthModels;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin;
+using System;
+using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infratructure
 {
-    public class ApplicationUserManager : UserManager<ApplicationUser>
+    public class ApplicationUserManager : IDisposable
     {
-        public ApplicationUserManager(IUserStore<ApplicationUser> store)
-            : base(store)
+        private AuthDbContext _ctx;
+
+        private UserManager<IdentityUser> _userManager;
+
+        public ApplicationUserManager()
         {
+            _ctx = new AuthDbContext();
+            _userManager = new UserManager<IdentityUser>(new UserStore<IdentityUser>(_ctx));
         }
 
-        public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
+        public async Task<IdentityResult> RegisterUser(UserRegisterModel userModel)
         {
-            var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<AuthDbContext>()));
-            // Configure validation logic for usernames
-            manager.UserValidator = new UserValidator<ApplicationUser>(manager)
+            IdentityUser user = new IdentityUser
             {
-                AllowOnlyAlphanumericUserNames = false,
-                RequireUniqueEmail = true
+                UserName = userModel.UserName,
+                Email = userModel.Email
             };
-            // Configure validation logic for passwords
-            manager.PasswordValidator = new PasswordValidator
-            {
-                RequiredLength = 6,
-                RequireNonLetterOrDigit = true,
-                RequireDigit = true,
-                RequireLowercase = true,
-                RequireUppercase = true,
-            };
-            var dataProtectionProvider = options.DataProtectionProvider;
-            if (dataProtectionProvider != null)
-            {
-                manager.UserTokenProvider = new DataProtectorTokenProvider<ApplicationUser>(dataProtectionProvider.Create("ASP.NET Identity"));
-            }
-            return manager;
+
+            var result = await _userManager.CreateAsync(user, userModel.Password);
+
+            return result;
+        }
+
+        public async Task<IdentityUser> FindUser(string userName, string password)
+        {
+            IdentityUser user = await _userManager.FindAsync(userName, password);
+
+            return user;
+        }
+
+        public void Dispose()
+        {
+            _ctx.Dispose();
+            _userManager.Dispose();
+
         }
     }
 }

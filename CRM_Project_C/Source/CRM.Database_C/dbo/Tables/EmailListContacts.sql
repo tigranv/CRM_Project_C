@@ -16,4 +16,3 @@ GO
 CREATE NONCLUSTERED INDEX [IX_ContactID]
     ON [dbo].[EmailListContacts]([ContactID] ASC);
 
-

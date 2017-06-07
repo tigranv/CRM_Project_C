@@ -1,5 +1,4 @@
-﻿using CRM.WebApi.Infratructure;
-using CRM.WebApi.Providers;
+﻿using CRM.WebApi.Providers;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.OAuth;
 using Newtonsoft.Json;
@@ -42,28 +41,21 @@ namespace CRM.WebApi
 
             config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
-        
-        private void ConfigureOAuth(IAppBuilder app)
-        {
-            app.CreatePerOwinContext(AuthDbContext.Create);
-            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
 
-            var options = new OAuthAuthorizationServerOptions
+        public void ConfigureOAuth(IAppBuilder app)
+        {
+            OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()
             {
                 AllowInsecureHttp = true,
-                TokenEndpointPath = new PathString("/api/token"),
+                TokenEndpointPath = new PathString("api/token"),
                 AccessTokenExpireTimeSpan = TimeSpan.FromDays(1),
-                Provider = new ApplicationOAuthProvider()
+                Provider = new SimpleAuthorizationServerProvider()
             };
 
-            app.UseOAuthAuthorizationServer(options);
-            app.UseOAuthBearerAuthentication
-            (
-                new OAuthBearerAuthenticationOptions
-                {
-                    Provider = new OAuthBearerAuthenticationProvider()
-                }
-            );
+            // Token Generation
+            app.UseOAuthAuthorizationServer(OAuthServerOptions);
+            app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions());
         }
+
     }
 }

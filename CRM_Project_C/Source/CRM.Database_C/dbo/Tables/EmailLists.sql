@@ -3,3 +3,4 @@
     [EmailListName] VARCHAR (250) NOT NULL,
     CONSTRAINT [PK_dbo.EmailLists] PRIMARY KEY CLUSTERED ([EmailListID] ASC)
 );
+
