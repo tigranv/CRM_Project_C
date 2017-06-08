@@ -1,53 +1,13 @@
-﻿using System;
+﻿using CRM.EntityFrameWorkLib;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestWpfAppForCRM
 {
-    public class Contact
-    {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Contact()
-        {
-            this.EmailLists = new HashSet<EmailList>();
-        }
-
-        public int ContactId { get; set; }
-        public string FullName { get; set; }
-        public string CompanyName { get; set; }
-        public string Position { get; set; }
-        public string Country { get; set; }
-        public string Email { get; set; }
-        public System.Guid GuID { get; set; }
-        public System.DateTime DateInserted { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<EmailList> EmailLists { get; set; }
-    }
-
-    public class EmailList
-    {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public EmailList()
-        {
-            this.Contacts = new HashSet<Contact>();
-        }
-
-        public int EmailListID { get; set; }
-        public string EmailListName { get; set; }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Contact> Contacts { get; set; }
-    }
-
     public class MyContact
     {
         public MyContact()
         {
-            GuID = new Guid();
-            DateInserted = null;
             EmailLists = new Dictionary<int, string>();
         }
         public MyContact(Contact contact)

@@ -18,7 +18,6 @@ namespace CRM.WebApi.Infratructure
         {
             logger.Error($"  Request: [ {request} ] : URL [ {uri} ]\nError message: [ {ex.Message} ]\nInner message: [ {ex.InnerException?.Message} ]\n" + new string('-', 140));
         }
-
         public string ReadLogErrorData()
         {
             var fileTarget = (FileTarget)LogManager.Configuration.FindTargetByName("file");
