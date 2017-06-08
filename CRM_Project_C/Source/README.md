@@ -1,5 +1,7 @@
 # **CRM Web API Documentation**
 
+[Download WEB API Documentation PDF](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/Source/CRM.WebApi/CRM%20WebAPI%20Documentation.pdf)
+
 
 BetConstruct Coding Bootcamp team Bet-C
 
