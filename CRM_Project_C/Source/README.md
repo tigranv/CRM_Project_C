@@ -64,7 +64,7 @@ Yerevan
 
 # **1 Registration/Authentication**
 
-###**1.1 Post (Registration)**
+### **1.1 Post (Registration)**
 
 Adds new admin
 
