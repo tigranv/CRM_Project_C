@@ -35,6 +35,4 @@ namespace CRM.WebApi.Infratructure
             return t;
         }
     }
-
-
 }

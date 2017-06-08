@@ -19,7 +19,14 @@ namespace CRM.WebApi.Filters
         {
             log.LogError(actionExecutedContext.Exception, actionExecutedContext.Request.Method, actionExecutedContext.Request.RequestUri);
 
-            if (actionExecutedContext.Exception is NullReferenceException)
+            if (actionExecutedContext.Exception is ArgumentNullException)
+            {
+                actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
+                };
+            }
+            else if (actionExecutedContext.Exception is NullReferenceException)
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
@@ -52,8 +59,7 @@ namespace CRM.WebApi.Filters
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
-                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
-                    //Content = new StringContent("We apologize but an error occured within the application. Please try again later.", System.Text.Encoding.UTF8, "text/plain")
+                    Content = new StringContent(string.Format($"We apologize but an error occured within the application.\n{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}"))
                 };
             
             }

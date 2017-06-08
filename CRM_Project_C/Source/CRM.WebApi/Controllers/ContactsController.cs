@@ -86,8 +86,9 @@ namespace CRM.WebApi.Controllers
                 Contact addedcontact = await appManager.AddOrUpdateContactAsync(contactToAdd, contact, true);
                 if (addedcontact != null) count++;
             }
-
-            return Ok($"{count} - Contacts added successfully, {contactsList.Count - 1 - count} - failed(please ensure that data entered correctly)");
+            string res = contactsList.Count - 1 - count > 0 ? $"{count} - Contacts added successfully, {contactsList.Count - 1 - count} - failed" :
+            $"{count} - Contacts added successfully, {contactsList.Count - 1 - count} - failed(please ensure that data entered correctly)";
+            return Ok(res);
         }
 
         [Route("api/Contacts/pagies")]
