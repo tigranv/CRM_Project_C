@@ -1,7 +1,6 @@
 # CRM WEB API Project_C
 
-Simple CRM project
-
+Simple Customer Relationship Management Project (CRM for BetConstruct Internship). [Source](https://github.com/tigranv/CRM_Project_C/tree/master/CRM_Project_C/Source)
 
 [Download WEB API Documentation PDF](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/Source/CRM.WebApi/CRM%20WebAPI%20Documentation.pdf)
 
