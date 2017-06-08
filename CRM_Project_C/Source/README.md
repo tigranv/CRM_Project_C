@@ -793,7 +793,7 @@ Returns contacts by paiges filtered and ordered by specific fields
 
 # **3 Email lists**
 
-###**3.1 Get**
+### **3.1 Get**
 
 Gets all email lists from database without contacts
 
