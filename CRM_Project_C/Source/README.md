@@ -182,11 +182,11 @@ Authenticates the user with the system and gives token
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request </td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>500  Internal Server Error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -256,11 +256,11 @@ Gets all contacts from database without email lists
 ]</td>
   </tr>
   <tr>
-    <td>400 Bad Request </td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td></td>
   </tr>
 </table>
@@ -327,11 +327,11 @@ Gets specific contact by GuId
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If in database Contact with such guid is not found </td>
   </tr>
 </table>
@@ -399,11 +399,11 @@ The   "EmailLists":  field is optional and can be ignored in request  (in this c
 }</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If in database Contact with such guid is not found </td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
 </table>
@@ -471,7 +471,7 @@ The   "EmailLists":  field is optional and can be ignored in request  (in this c
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
 </table>
@@ -521,11 +521,11 @@ Deletes the specific  contact by GuId
     <td></td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If in database Contact with such guid is not found </td>
   </tr>
 </table>
@@ -577,11 +577,11 @@ Deletes the specific  contact by GuId
     <td></td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If in database Contact with such guid is not found </td>
   </tr>
 </table>
@@ -663,7 +663,7 @@ Name9,Company9,Position,Country9,samplemail33@gmail.com</td>
     <td>Number of successfully uploaded and failed contacts</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
 </table>
@@ -779,11 +779,11 @@ Returns contacts by paiges filtered and ordered by specific fields
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If Email List  with such id is not found in database</td>
   </tr>
 </table>
@@ -832,11 +832,11 @@ Gets all email lists from database without contacts
 ]</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td></td>
   </tr>
 </table>
@@ -899,11 +899,11 @@ Gets specific  email list by Id
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If Email List  with such id is not found in database</td>
   </tr>
 </table>
@@ -994,15 +994,15 @@ Updates specific  email list contacts: if flag is true, adds contacts from reque
 }</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If email list with such id is not found in database</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>500 Internal Server Error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -1079,15 +1079,15 @@ The    "Contacts":  field is optional and can be ignored in request  (in this ca
 }</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td>If email list with such id is not found in database</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>500 Internal Server Error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -1164,11 +1164,11 @@ The   "Contacts":  field is optional and can be ignored in request  (in this cas
 }</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>500 Internal Server Error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -1218,11 +1218,11 @@ Deletes the specific  email list by Id
     <td></td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td></td>
     <td>If email list with such guid is not found in database</td>
   </tr>
 </table>
@@ -1282,11 +1282,11 @@ Sends emails to contacts by guid
     <td></td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td></td>
   </tr>
   <tr>
-    <td>500 Internal Server error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -1341,11 +1341,11 @@ Sends emails to contacts by email list id
     <td></td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td></td>
   </tr>
   <tr>
-    <td>500 Internal Server error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
@@ -1397,17 +1397,17 @@ Gets all templates
 ]</td>
   </tr>
   <tr>
-    <td>400 Bad Request</td>
+    <td>400</td>
     <td>Exception and InnerException Message</td>
   </tr>
   <tr>
-    <td>404 Not Found</td>
+    <td>404</td>
     <td></td>
   </tr>
   <tr>
-    <td>500 Internal Server Error</td>
+    <td>500</td>
     <td></td>
   </tr>
 </table>
 
-
+>Project done on C# 6.0, .NET Framework 4.6 Visual Studio 2015 Comunity Edition
