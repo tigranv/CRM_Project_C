@@ -665,6 +665,128 @@ Name9,Company9,Position,Country9,samplemail33@gmail.com</td>
   </tr>
 </table>
 
+### **2.8 Post (Query contacts)**
+
+Returns contacts by paiges filtered and ordered by specific fields
+
+**Request**
+
+<table>
+  <tr>
+    <td>Method</td>
+    <td>URL</td>
+  </tr>
+  <tr>
+    <td>Put</td>
+    <td>http://crmbetc.azurewebsites.net/api/contacts/pagies</td>
+  </tr>
+</table>
+
+
+<table>
+  <tr>
+    <td>Type</td>
+    <td>Param name</td>
+    <td>Pagination / optional parameters</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>start </td>
+    <td>number  (starting from row)</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>rows</td>
+    <td>number  (contacts per page)</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td></td>
+    <td>Order By/ optional parameters</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>date</td>
+    <td>1 -  Ascending, 0 -  descending</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>name</td>
+    <td>1 -  Ascending, 0 -  descending</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>company</td>
+    <td>1 -  Ascending, 0 -  descending</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>country</td>
+    <td>1 -  Ascending, 0 -  descending</td>
+  </tr>
+  <tr>
+    <td>URL_PARAM </td>
+    <td>position</td>
+    <td>1 -  Ascending, 0 -  descending</td>
+  </tr>
+</table>
+
+
+<table>
+  <tr>
+    <td>Type</td>
+    <td>Values </td>
+  </tr>
+  <tr>
+    <td>Post_Body_Param</td>
+    <td>{
+  "FullName": "Tatevik Vardanyan",
+  "CompanyName": "Mic Armenia",
+  "Position": "Developer",
+  "Country": "Armenia",
+  "Email": "tatevik@gmail.com",
+  "EmailLists": [1, 2]
+}</td>
+  </tr>
+</table>
+
+
+**Response**
+
+<table>
+  <tr>
+    <td>Status</td>
+    <td>Response</td>
+  </tr>
+  <tr>
+    <td>200 OK</td>
+    <td>Response is Key Value pair, where key is number of pagies, and value is list of Contacts
+{
+  "Key": 2,
+  "Value": [
+    {
+      "Full Name": "Tsovinar Ghazaryan",
+      "Company Name": "MIC Armenia",
+      "Position": "Developer",
+      "Country": "Armenia",
+      "Email": "tsovinar.ghazaryan@yahoo.com",
+      "GuID": "03fba3cf-86fc-4618-a711-e636345e40c4"
+    }
+  ]
+}</td>
+  </tr>
+  <tr>
+    <td>400 Bad Request</td>
+    <td>Exception and InnerException Message</td>
+  </tr>
+  <tr>
+    <td>404 Not Found</td>
+    <td>If Email List  with such id is not found in database</td>
+  </tr>
+</table>
+
+
+
 
 # **3 Email lists**
 
