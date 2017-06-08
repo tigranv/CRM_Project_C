@@ -10,7 +10,7 @@ Simple Customer Relationship Management Project (CRM for [BetConstruct](https://
 
 
 
-Check Project functionality [here](http://crmbetc.azurewebsites.net/#/contacts)
+### **Check Project functionality** [**here**](http://crmbetc.azurewebsites.net/#/contacts)
 
 
 > Project done on C# 6.0, .NET Framework 4.6 Visual Studio 2015 Comunity Edition
