@@ -11,7 +11,7 @@ using CRM.WebApi.Models.Response;
 namespace CRM.WebApi.Controllers
 {
     //[Authorize]
-    [NotImplExceptionFilterAttribute]
+    [MylExceptionFilterAttribute]
     public class EmailListsController : ApiController
     {
         private ApplicationManager appManager;

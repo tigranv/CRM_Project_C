@@ -145,7 +145,9 @@ namespace CRM.WebApi.Infrastructure
             guidList.RemoveRange(9, 5);
             await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Armenian", Contacts = guidList });
             guidList.RemoveRange(5, 4);
-            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "VIP", Contacts = guidList });
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "VIP Partners", Contacts = guidList });
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Partners From USA" });
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Partners From Singapore" });
 
             return true;
         }

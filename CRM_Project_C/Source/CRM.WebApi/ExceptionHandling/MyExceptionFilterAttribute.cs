@@ -10,8 +10,7 @@ using System.Web.Http.Filters;
 
 namespace CRM.WebApi.Filters
 {
-    //TODO: exception handling need to add
-    public class NotImplExceptionFilterAttribute : ExceptionFilterAttribute
+    public class MylExceptionFilterAttribute : ExceptionFilterAttribute
     {
         private readonly ApplicationLoggerManager log = new ApplicationLoggerManager();
 

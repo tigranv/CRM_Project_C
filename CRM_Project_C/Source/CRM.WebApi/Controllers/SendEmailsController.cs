@@ -9,7 +9,7 @@ using System.Web.Http;
 namespace CRM.WebApi.Controllers
 {
     //[Authorize]
-    [NotImplExceptionFilterAttribute]
+    [MylExceptionFilterAttribute]
     public class SendEmailsController : ApiController
     {
         ApplicationManager appManager;

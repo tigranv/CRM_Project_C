@@ -15,7 +15,7 @@ using CRM.WebApi.Models.Response;
 namespace CRM.WebApi.Controllers
 {
     //[Authorize]
-    [NotImplExceptionFilter]
+    [MylExceptionFilter]
     public class ContactsController : ApiController
     {
         ApplicationManager appManager;

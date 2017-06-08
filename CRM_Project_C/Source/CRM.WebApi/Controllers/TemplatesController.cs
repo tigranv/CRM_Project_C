@@ -8,7 +8,7 @@ using CRM.WebApi.Filters;
 namespace CRM.WebApi.Controllers
 {
     //[Authorize]
-    [NotImplExceptionFilter]
+    [MylExceptionFilter]
     public class TemplatesController : ApiController
     {
         private ApplicationManager appManager;
