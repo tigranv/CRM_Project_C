@@ -1,6 +1,6 @@
 # **CRM Web API Documentation**
 
-[Download WEB API Documentation PDF](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/Source/CRM.WebApi/CRM%20WebAPI%20Documentation.pdf)
+[Download WEB API Documentation PDF](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/Source/CRM.WebApi/CRMWebAPISpecification.pdf)
 
 [View Documentation in Google Docs](https://docs.google.com/document/d/1CnJY259mf3gKUYh0qeugpJqmWIlXT2yof21L6xJVXlc/edit?usp=sharing)
 
@@ -16,48 +16,33 @@ Yerevan
 
 # **Index**
 
-**Registration Authentication**
+## **Registration Authentication**
 
 * **Registration** (Adds admin)
-
 * **Login** (Authenticates the user with the system and gives token**)
 
 ### **Contacts**
 
 * **Get** (returns all contacts from database)
-
 * **Get By GuId**  (returns specific contact and mailing lists of that contact)
-
 * **Put**  (updates specific contact by GuId)
-
 * **Post** (creates new contact)
-
 * **Delete** (deletes contact by GuId)
-
 * **Delete** (deletes contact by GuId list)
-
 * **Post** (uploads contacts from Excel or CSV file to database)
-
 * **Post** (returns contacts by paiges filtered and ordered by specific fields)
-
 ### **Email Lists**
 
 * **Get** (returns all email lists from database)
-
 * **Get By Id**  (returns specific email list and contacts of that list)
-
 * **Put**  (updates specific email list contacts)
-
 * **Put**  (updates specific email list)
-
 * **Post** (creates new email list)
-
 * **Delete** (deletes email list by Id)
 
 ### **Send Email**
 
 * **Post** (sends emails to contacts by contacts guid list, and template id)
-
 * **Post** (sends emails to contacts by email list id and template id)
 
 ### **Email Templates**
@@ -793,7 +778,7 @@ Returns contacts by paiges filtered and ordered by specific fields
 
 # **3 Email lists**
 
-###**3.1 Get**
+### **3.1 Get**
 
 Gets all email lists from database without contacts
 
