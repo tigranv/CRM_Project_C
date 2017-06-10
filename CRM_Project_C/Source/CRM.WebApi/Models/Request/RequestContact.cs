@@ -6,16 +6,16 @@ namespace CRM.WebApi.Models.Request
 {
     public class RequestContact
     {
-        [Required(ErrorMessage = "Name is Requiered"), MinLength(2)]
+        [Required(ErrorMessage = "Name is Requiered"), MinLength(1)]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "Company Name is Requiered"), MinLength(2)]
+        [Required(ErrorMessage = "Company Name is Requiered"), MinLength(1)]
         public string CompanyName { get; set; }
 
-        [Required(ErrorMessage = "Position is Requiered"), MinLength(2)]
+        [Required(ErrorMessage = "Position is Requiered"), MinLength(1)]
         public string Position { get; set; }
 
-        [Required(ErrorMessage = "Country is Requiered"), MinLength(2)]
+        [Required(ErrorMessage = "Country is Requiered"), MinLength(1)]
         public string Country { get; set; }
 
         [Required(ErrorMessage = "Email is Requiered")]

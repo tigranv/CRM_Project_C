@@ -36,7 +36,7 @@ namespace CRM.WebApi.Filters
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.Conflict)
                 { 
-                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
+                    Content = new StringContent(string.Format($" Data Exception {actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
                 };
             }
 
@@ -44,7 +44,7 @@ namespace CRM.WebApi.Filters
             {
                 actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.Conflict)
                 {
-                    Content = new StringContent(string.Format($"{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
+                    Content = new StringContent(string.Format($"Entity Exception{actionExecutedContext.Exception.Message}\n{actionExecutedContext.Exception.InnerException?.Message}")),
                 };
             }
             else if (actionExecutedContext.Exception is NotImplementedException)

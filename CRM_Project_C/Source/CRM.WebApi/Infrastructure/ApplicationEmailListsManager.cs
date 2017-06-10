@@ -146,12 +146,11 @@ namespace CRM.WebApi.Infrastructure
             await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Armenian", Contacts = guidList });
             guidList.RemoveRange(5, 4);
             await AddNewEmailListAsync(new RequestEmailList { EmailListName = "VIP Partners", Contacts = guidList });
-            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Partners From USA" });
-            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Partners From Singapore" });
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "USA Partners" });
+            await AddNewEmailListAsync(new RequestEmailList { EmailListName = "Singapore Partners" });
 
             return true;
         }
-
         #endregion
     }
 }

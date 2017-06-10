@@ -40,7 +40,7 @@ namespace CRM.WebApi.Infrastructure
             RequestContact contactValues = new RequestContact();
             for (int i = 0; i < 5; i++)
             {
-                if (values[i] == null || values[i].Length < 2) return null;
+                if (values[i] == null || values[i].Length < 1) return null;
             }
             if (!EmailValidator(values[4])) return null;
             contactValues.FullName = values[0];
@@ -91,7 +91,7 @@ namespace CRM.WebApi.Infrastructure
                     j = 0;
                     i++;
 
-                    if (strProperties.Any(p => p == null || p.Length < 2)) { contacts.Add(null); continue; }
+                    if (strProperties.Any(p => p == null || p.Length < 1)) { contacts.Add(null); continue; }
                     if (!EmailValidator(strProperties[4])) { contacts.Add(null); continue; }
                     contact = new RequestContact();
                     contact.FullName = strProperties[0];

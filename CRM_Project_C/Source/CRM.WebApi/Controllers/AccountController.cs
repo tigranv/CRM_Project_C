@@ -9,9 +9,11 @@ using System.Web;
 using System.IO;
 using System;
 using CRM.WebApi.Infrastructure;
+using CRM.WebApi.Filters;
 
 namespace CRM.WebApi.Controllers
 {
+    [MylExceptionFilter]
     public class AccountController : ApiController
     {
         private ApplicationUserManager userManager;

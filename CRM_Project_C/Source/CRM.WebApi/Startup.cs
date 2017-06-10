@@ -17,7 +17,7 @@ namespace CRM.WebApi
         {
             ConfigureOAuth(app);
 
-            app.UseWelcomePage("/");
+            // app.UseWelcomePage("/");
 
             HttpConfiguration httpConfig = new HttpConfiguration();
 
