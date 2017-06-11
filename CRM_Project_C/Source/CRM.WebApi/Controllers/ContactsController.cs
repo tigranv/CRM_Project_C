@@ -76,7 +76,7 @@ namespace CRM.WebApi.Controllers
             string filename = provider.GetFileName;
             List<RequestContact> contactsList = ParsingProvider.GetContactsFromFile(Path.Combine(root, filename));
 
-            if (contactsList == null) return BadRequest();
+            if (contactsList == null) return BadRequest("Invalid file");
 
             Contact contactToAdd = new Contact();
             int count = 0;

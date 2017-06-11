@@ -15,21 +15,27 @@ namespace CRM.WebApi.Infrastructure
         public static List<RequestContact> GetContactsFromFile(string path)
         {
             List<RequestContact> contacts = new List<RequestContact>();
-            RequestContact contact = new RequestContact();
             string ext = path.Substring(path.Length - 4);
 
-
-            switch (ext)
+            try
             {
-                case "xlsx":
-                    contacts = ReadExcelFile(path);
+                switch (ext)
+                {
+                    case "xlsx":
+                        contacts = ReadExcelFile(path);
                         break;
-                case ".csv":
-                    contacts = File.ReadAllLines(path).Select(v => FromCsv(v)).ToList();
-                    break;
-                default:
-                    return null;
+                    case ".csv":
+                        contacts = File.ReadAllLines(path).Select(v => FromCsv(v)).ToList();
+                        break;
+                    default:
+                        return null;
+                }
             }
+            catch (Exception)
+            {
+                return null;
+            }
+            
 
             return contacts;
         }

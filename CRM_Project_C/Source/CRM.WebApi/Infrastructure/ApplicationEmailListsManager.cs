@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CRM.WebApi.Infrastructure
 {
-    public partial class ApplicationManager : IDisposable
+    public partial class ApplicationManager
     {
         #region EmailLists Manager
         public async Task<List<EmailList>> GetAllEmaillistsAsync()

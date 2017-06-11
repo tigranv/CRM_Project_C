@@ -111,6 +111,11 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="TestExcelCSV\ImageSavedAsCSV.csv" />
+    <None Include="TestExcelCSV\TestCSV with errors.csv" />
+    <None Include="TestExcelCSV\TestCSV.csv" />
+    <None Include="TestExcelCSV\TestExcelFile.xlsx" />
+    <None Include="TestExcelCSV\TestExcelFileWith errors.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -120,6 +125,9 @@
       <Project>{297430c3-ab83-4724-a4ed-c0dde577b7cc}</Project>
       <Name>CRM.EntityFrameWorkLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="TestExcelCSV\HackersImage.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

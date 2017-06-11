@@ -198,8 +198,8 @@
   <ItemGroup>
     <Content Include="build\index.html" />
     <Content Include="build\service-worker.js" />
-    <Content Include="build\static\css\main.eaaa74a5.css" />
-    <Content Include="build\static\js\main.109e3f9a.js" />
+    <Content Include="build\static\css\main.706afc01.css" />
+    <Content Include="build\static\js\main.c8f2984e.js" />
     <Content Include="packages.config" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -210,19 +210,23 @@
     <Content Include="Logs\2017-05-31.log" />
     <Content Include="build\asset-manifest.json" />
     <Content Include="build\manifest.json" />
-    <Content Include="build\static\css\main.eaaa74a5.css.map" />
-    <Content Include="build\static\js\main.109e3f9a.js.map" />
+    <Content Include="build\static\css\main.706afc01.css.map" />
+    <Content Include="build\static\js\main.c8f2984e.js.map" />
     <Content Include="build\static\media\Quicksand-Regular.f87b9b4f.ttf" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Properties\PublishProfiles\crmbetc - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\crmbetc - Web Deploy.pubxml" />
+    <Content Include="Templates\BettingTerminalOffer.html" />
     <Content Include="Templates\BirthdayWish.html" />
+    <Content Include="Templates\HappyEaster.html" />
+    <Content Include="Templates\IndependenceDay.html" />
     <Content Include="Templates\LabourDay.html" />
     <Content Include="Templates\LogErrors.html" />
     <Content Include="Templates\NewYear.html" />
     <Content Include="Templates\Reset.html" />
+    <Content Include="Templates\TheDoorOffer.html" />
     <Content Include="Uploads\ResetCSV.csv" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -232,8 +236,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Templates\HappyEaster.html" />
-    <Content Include="Templates\IndependenceDay.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

@@ -54,7 +54,7 @@ namespace CRM.WebApi.Controllers
             if (emailListToUpdate == null) return NotFound();
 
             EmailList updatedEmailList = await appManager.ModifyEmailListAsync(emailListToUpdate, emailList.Contacts, emailList.EmailListName, true);
-            if (updatedEmailList != null) Ok(updatedEmailList);
+            if (updatedEmailList != null) return Ok(new ViewEmailList(updatedEmailList));
             return BadRequest();
         }
 
