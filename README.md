@@ -12,7 +12,6 @@ Simple Customer Relationship Management Project (CRM for [BetConstruct](https://
 
 ### **Check project functionality** [**here**](http://crmbetc.azurewebsites.net/#/contacts)
 
-
-![crmgif](https://user-images.githubusercontent.com/24522089/26962277-2ad3b0e8-4cf6-11e7-9e27-15e5533ffe4d.gif)
+![Gif](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/test/TestWpfAppForCRM/CRMGif.gif?raw=true)
 
 > Project done on C# 6.0, .NET Framework 4.6 Visual Studio 2015 Comunity Edition
