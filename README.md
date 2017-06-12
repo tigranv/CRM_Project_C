@@ -2,7 +2,7 @@
 
 Simple Customer Relationship Management Project (CRM for [BetConstruct](https://www.betconstruct.com/#/)  Internship).
 
-[Source](https://github.com/tigranv/CRM_Project_C/tree/master/CRM_Project_C/Source)
+[Source Code](https://github.com/tigranv/CRM_Project_C/tree/master/CRM_Project_C/Source)
 
 [Download WEB API Documentation PDF](https://github.com/tigranv/CRM_Project_C/blob/master/CRM_Project_C/Source/CRM.WebApi/CRMWebAPISpecification.pdf)
 
