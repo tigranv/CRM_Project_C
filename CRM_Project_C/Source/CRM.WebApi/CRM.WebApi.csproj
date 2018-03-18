@@ -25,6 +25,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -207,7 +208,6 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Logs\2017-05-31.log" />
     <Content Include="build\asset-manifest.json" />
     <Content Include="build\manifest.json" />
     <Content Include="build\static\css\main.706afc01.css.map" />
@@ -218,7 +218,6 @@
     </None>
     <None Include="Properties\PublishProfiles\crmbetc - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\crmbetc - Web Deploy.pubxml" />
-    <Content Include="Templates\BettingTerminalOffer.html" />
     <Content Include="Templates\BirthdayWish.html" />
     <Content Include="Templates\HappyEaster.html" />
     <Content Include="Templates\IndependenceDay.html" />
@@ -226,8 +225,8 @@
     <Content Include="Templates\LogErrors.html" />
     <Content Include="Templates\NewYear.html" />
     <Content Include="Templates\Reset.html" />
-    <Content Include="Templates\TheDoorOffer.html" />
     <Content Include="Uploads\ResetCSV.csv" />
+    <None Include="Properties\PublishProfiles\CRMWebApi20180318024108 - Web Deploy.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -269,7 +268,9 @@
       <Name>CRM.EntityFrameWorkLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -281,7 +282,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>60730</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
